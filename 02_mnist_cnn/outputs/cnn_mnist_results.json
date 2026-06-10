@@ -1,0 +1,33 @@
+{
+  "model": "SimpleCNN",
+  "dataset": "MNIST",
+  "device": "cuda",
+  "epochs": 3,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "num_workers": 4,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.20570778142213822,
+      "train_accuracy": 0.9357666666666666,
+      "test_loss": 0.046549398785829546,
+      "test_accuracy": 0.9856
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.0657320600181818,
+      "train_accuracy": 0.9801666666666666,
+      "test_loss": 0.034032027345150706,
+      "test_accuracy": 0.9887
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.051540862774848935,
+      "train_accuracy": 0.9841,
+      "test_loss": 0.02947185316607356,
+      "test_accuracy": 0.99
+    }
+  ],
+  "final_test_accuracy": 0.99
+}

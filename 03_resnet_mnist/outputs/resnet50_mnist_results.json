@@ -1,0 +1,33 @@
+{
+  "model": "ResNet-50",
+  "dataset": "MNIST",
+  "device": "cuda",
+  "epochs": 3,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "num_workers": 4,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.17252405857642492,
+      "train_accuracy": 0.9473333333333334,
+      "test_loss": 0.14506681787222625,
+      "test_accuracy": 0.9562
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.04716034248272578,
+      "train_accuracy": 0.9861666666666666,
+      "test_loss": 0.079909767062217,
+      "test_accuracy": 0.9745
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.033727343426148096,
+      "train_accuracy": 0.9898,
+      "test_loss": 0.0471316141829826,
+      "test_accuracy": 0.9872
+    }
+  ],
+  "final_test_accuracy": 0.9872
+}

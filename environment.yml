@@ -1,0 +1,12 @@
+name: deepl-homework
+channels:
+  - pytorch
+  - nvidia
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - numpy
+  - pytorch
+  - torchvision
+
