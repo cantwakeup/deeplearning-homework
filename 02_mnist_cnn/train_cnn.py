@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader, Subset
 class SimpleCNN(nn.Module):
     def __init__(self) -> None:
         super().__init__()
+        # 两组卷积块逐步提取笔画局部特征，池化后尺寸从 28x28 降到 7x7。
         self.features = nn.Sequential(
             nn.Conv2d(1, 32, kernel_size=3, padding=1),
             nn.BatchNorm2d(32),
@@ -130,6 +131,18 @@ def evaluate(model: nn.Module, loader: DataLoader, criterion: nn.Module, device:
     return total_loss / total, correct / total
 
 
+@torch.no_grad()
+def predict_examples(model: nn.Module, loader: DataLoader, device: torch.device, limit: int = 10) -> list[dict[str, int]]:
+    model.eval()
+    images, labels = next(iter(loader))
+    logits = model(images.to(device))
+    predictions = logits.argmax(dim=1).cpu()
+    return [
+        {"true": int(true), "pred": int(pred)}
+        for true, pred in zip(labels[:limit], predictions[:limit])
+    ]
+
+
 def main() -> None:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -170,6 +183,7 @@ def main() -> None:
         "num_workers": args.num_workers,
         "history": history,
         "final_test_accuracy": history[-1]["test_accuracy"],
+        "sample_predictions": predict_examples(model, test_loader, device),
     }
     with (args.output_dir / "cnn_mnist_results.json").open("w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)

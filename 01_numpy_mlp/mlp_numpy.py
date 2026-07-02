@@ -103,6 +103,7 @@ class NumpyMLP:
         return exp / exp.sum(axis=1, keepdims=True)
 
     def forward(self, x: np.ndarray) -> tuple[np.ndarray, dict[str, np.ndarray]]:
+        # 前向传播：输入层 -> 隐含层 ReLU -> 输出层 Softmax。
         z1 = x @ self.w1 + self.b1
         a1 = self.relu(z1)
         logits = a1 @ self.w2 + self.b2
@@ -124,6 +125,7 @@ class NumpyMLP:
         probabilities = cache["probabilities"]
         batch_size = x.shape[0]
 
+        # 反向传播：Softmax + 交叉熵的梯度先回传到输出层，再回传到隐含层。
         d_logits = (probabilities - y_true) / batch_size
         d_w2 = a1.T @ d_logits + self.l2 * self.w2
         d_b2 = d_logits.sum(axis=0, keepdims=True)
@@ -173,4 +175,3 @@ class NumpyMLP:
 
     def accuracy(self, x: np.ndarray, y: np.ndarray) -> float:
         return float(np.mean(self.predict(x) == y))
-

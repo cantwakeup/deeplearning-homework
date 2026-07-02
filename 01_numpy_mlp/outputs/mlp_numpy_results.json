@@ -7,5 +7,47 @@
   "epochs": 1500,
   "final_loss": 0.160341506679583,
   "final_train_accuracy": 0.975,
-  "final_test_accuracy": 0.9666666666666667
+  "final_test_accuracy": 0.9666666666666667,
+  "sample_predictions": [
+    {
+      "true": 0,
+      "pred": 0
+    },
+    {
+      "true": 2,
+      "pred": 2
+    },
+    {
+      "true": 1,
+      "pred": 1
+    },
+    {
+      "true": 2,
+      "pred": 2
+    },
+    {
+      "true": 0,
+      "pred": 0
+    },
+    {
+      "true": 0,
+      "pred": 0
+    },
+    {
+      "true": 0,
+      "pred": 0
+    },
+    {
+      "true": 1,
+      "pred": 1
+    },
+    {
+      "true": 0,
+      "pred": 0
+    },
+    {
+      "true": 0,
+      "pred": 0
+    }
+  ]
 }

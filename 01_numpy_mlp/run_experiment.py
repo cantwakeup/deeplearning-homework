@@ -46,6 +46,10 @@ def main() -> None:
         "final_loss": final_metrics.loss,
         "final_train_accuracy": final_metrics.train_accuracy,
         "final_test_accuracy": final_metrics.test_accuracy,
+        "sample_predictions": [
+            {"true": int(true), "pred": int(pred)}
+            for true, pred in zip(y_test[:10], model.predict(x_test[:10]))
+        ],
     }
 
     with (args.output_dir / "mlp_numpy_results.json").open("w", encoding="utf-8") as f:
@@ -69,4 +73,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -29,5 +29,47 @@
       "test_accuracy": 0.9872
     }
   ],
-  "final_test_accuracy": 0.9872
+  "final_test_accuracy": 0.9872,
+  "sample_predictions": [
+    {
+      "true": 7,
+      "pred": 7
+    },
+    {
+      "true": 2,
+      "pred": 2
+    },
+    {
+      "true": 1,
+      "pred": 1
+    },
+    {
+      "true": 0,
+      "pred": 0
+    },
+    {
+      "true": 4,
+      "pred": 4
+    },
+    {
+      "true": 1,
+      "pred": 1
+    },
+    {
+      "true": 4,
+      "pred": 4
+    },
+    {
+      "true": 9,
+      "pred": 9
+    },
+    {
+      "true": 5,
+      "pred": 5
+    },
+    {
+      "true": 9,
+      "pred": 9
+    }
+  ]
 }

@@ -8,6 +8,7 @@
 - `02_mnist_cnn/`：使用 PyTorch 编写卷积神经网络，对 MNIST 手写数字进行识别。
 - `03_resnet_mnist/`：使用 PyTorch 实现 ResNet-50，并在 MNIST 上完成训练和预测。
 - `report/`：实验报告提纲，最终需要整理成 Word 版提交。
+  - `report/汇报思路.md`：三部分实验的课堂汇报顺序、重点和常见追问回答。
 
 ## 环境
 
@@ -56,6 +57,7 @@ conda activate /home/huiwei/sy/Deepl/.conda-env
 训练脚本默认 `--num-workers 0`，可以在普通终端环境中自行调大；在受限沙箱中保持 0 更稳定。
 
 每个实验都会把训练结果保存到对应目录的 `outputs/` 中。模型权重文件可能较大，默认不纳入 git。
+CNN 的多轮训练对比结果保存在 `02_mnist_cnn/outputs/cnn_mnist_epoch_comparison.csv`。
 
 ## 当前结果
 

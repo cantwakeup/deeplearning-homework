@@ -39,6 +39,7 @@ class Bottleneck(nn.Module):
         if self.downsample is not None:
             identity = self.downsample(x)
 
+        # 残差连接保留原始特征，缓解深层网络训练中的梯度衰减问题。
         out += identity
         return self.relu(out)
 
@@ -47,6 +48,7 @@ class ResNetMNIST(nn.Module):
     def __init__(self, layers: list[int], num_classes: int = 10) -> None:
         super().__init__()
         self.in_channels = 64
+        # MNIST 是 1 通道 28x28 图像，因此 stem 使用 1 通道输入和较小的 3x3 卷积。
         self.stem = nn.Sequential(
             nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(64),
@@ -190,6 +192,18 @@ def evaluate(model: nn.Module, loader: DataLoader, criterion: nn.Module, device:
     return total_loss / total, correct / total
 
 
+@torch.no_grad()
+def predict_examples(model: nn.Module, loader: DataLoader, device: torch.device, limit: int = 10) -> list[dict[str, int]]:
+    model.eval()
+    images, labels = next(iter(loader))
+    logits = model(images.to(device))
+    predictions = logits.argmax(dim=1).cpu()
+    return [
+        {"true": int(true), "pred": int(pred)}
+        for true, pred in zip(labels[:limit], predictions[:limit])
+    ]
+
+
 def main() -> None:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
@@ -230,6 +244,7 @@ def main() -> None:
         "num_workers": args.num_workers,
         "history": history,
         "final_test_accuracy": history[-1]["test_accuracy"],
+        "sample_predictions": predict_examples(model, test_loader, device),
     }
     with (args.output_dir / "resnet50_mnist_results.json").open("w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
