@@ -1,0 +1,679 @@
+{
+  "results": [
+    {
+      "optimizer": "rmsprop",
+      "learning_rate": 0.0001,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.19055368865529695,
+          "train_accuracy": 0.9407,
+          "test_loss": 0.059502774891071024,
+          "test_accuracy": 0.981
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.0653113953590393,
+          "train_accuracy": 0.9804166666666667,
+          "test_loss": 0.04170863690041006,
+          "test_accuracy": 0.9864
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.05211093464096387,
+          "train_accuracy": 0.9841666666666666,
+          "test_loss": 0.03318719728561118,
+          "test_accuracy": 0.9896
+        }
+      ],
+      "final_train_accuracy": 0.9841666666666666,
+      "final_test_accuracy": 0.9896,
+      "final_test_loss": 0.03318719728561118,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "optimizer": "adam",
+      "learning_rate": 0.001,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.195301980847617,
+          "train_accuracy": 0.94015,
+          "test_loss": 0.05557130094580352,
+          "test_accuracy": 0.9808
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.06571731404066086,
+          "train_accuracy": 0.9797166666666667,
+          "test_loss": 0.035047791390120986,
+          "test_accuracy": 0.9884
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.05112773791948954,
+          "train_accuracy": 0.9841833333333333,
+          "test_loss": 0.030456872538290918,
+          "test_accuracy": 0.9894
+        }
+      ],
+      "final_train_accuracy": 0.9841833333333333,
+      "final_test_accuracy": 0.9894,
+      "final_test_loss": 0.030456872538290918,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "optimizer": "adam",
+      "learning_rate": 0.0005,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.22400561361213525,
+          "train_accuracy": 0.93375,
+          "test_loss": 0.0622520520336926,
+          "test_accuracy": 0.9805
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.06979892473220825,
+          "train_accuracy": 0.9788333333333333,
+          "test_loss": 0.04122884908709675,
+          "test_accuracy": 0.9867
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.05321469510893027,
+          "train_accuracy": 0.9834333333333334,
+          "test_loss": 0.03290081408917904,
+          "test_accuracy": 0.9888
+        }
+      ],
+      "final_train_accuracy": 0.9834333333333334,
+      "final_test_accuracy": 0.9888,
+      "final_test_loss": 0.03290081408917904,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "optimizer": "rmsprop",
+      "learning_rate": 0.0005,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.6313733234415452,
+          "train_accuracy": 0.8771166666666667,
+          "test_loss": 0.07146536560170352,
+          "test_accuracy": 0.9768
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.1071483011563619,
+          "train_accuracy": 0.96835,
+          "test_loss": 0.05383433327469975,
+          "test_accuracy": 0.9828
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.07828516430060069,
+          "train_accuracy": 0.9751,
+          "test_loss": 0.03525094536053948,
+          "test_accuracy": 0.9888
+        }
+      ],
+      "final_train_accuracy": 0.9751,
+      "final_test_accuracy": 0.9888,
+      "final_test_loss": 0.03525094536053948,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "optimizer": "rmsprop",
+      "learning_rate": 0.001,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 1.0321689263323943,
+          "train_accuracy": 0.8514666666666667,
+          "test_loss": 0.07063094623200596,
+          "test_accuracy": 0.9785
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.128942710796992,
+          "train_accuracy": 0.9620833333333333,
+          "test_loss": 0.04552145655527711,
+          "test_accuracy": 0.9858
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.09073324464658897,
+          "train_accuracy": 0.9730666666666666,
+          "test_loss": 0.038089130123285575,
+          "test_accuracy": 0.9874
+        }
+      ],
+      "final_train_accuracy": 0.9730666666666666,
+      "final_test_accuracy": 0.9874,
+      "final_test_loss": 0.038089130123285575,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "optimizer": "sgd",
+      "learning_rate": 0.01,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.26115949653685094,
+          "train_accuracy": 0.9206333333333333,
+          "test_loss": 0.06681734567582608,
+          "test_accuracy": 0.9784
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.07940557213624319,
+          "train_accuracy": 0.9757333333333333,
+          "test_loss": 0.04531426539383829,
+          "test_accuracy": 0.9855
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.06058074096838633,
+          "train_accuracy": 0.9819333333333333,
+          "test_loss": 0.04076369567662477,
+          "test_accuracy": 0.9864
+        }
+      ],
+      "final_train_accuracy": 0.9819333333333333,
+      "final_test_accuracy": 0.9864,
+      "final_test_loss": 0.04076369567662477,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "optimizer": "sgd",
+      "learning_rate": 0.005,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.3394877806484699,
+          "train_accuracy": 0.8983666666666666,
+          "test_loss": 0.08261380820125341,
+          "test_accuracy": 0.9738
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.09916637573242187,
+          "train_accuracy": 0.9703666666666667,
+          "test_loss": 0.05300887180566788,
+          "test_accuracy": 0.9842
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.07517082572579384,
+          "train_accuracy": 0.97785,
+          "test_loss": 0.04339407622590661,
+          "test_accuracy": 0.9857
+        }
+      ],
+      "final_train_accuracy": 0.97785,
+      "final_test_accuracy": 0.9857,
+      "final_test_loss": 0.04339407622590661,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "optimizer": "adam",
+      "learning_rate": 0.0001,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.5092192582607269,
+          "train_accuracy": 0.8589166666666667,
+          "test_loss": 0.12816680487990378,
+          "test_accuracy": 0.9669
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.1399525931596756,
+          "train_accuracy": 0.9598,
+          "test_loss": 0.07358548617511988,
+          "test_accuracy": 0.9781
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.09709680242538452,
+          "train_accuracy": 0.9718833333333333,
+          "test_loss": 0.05652049904093146,
+          "test_accuracy": 0.9821
+        }
+      ],
+      "final_train_accuracy": 0.9718833333333333,
+      "final_test_accuracy": 0.9821,
+      "final_test_loss": 0.05652049904093146,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "optimizer": "sgd",
+      "learning_rate": 0.001,
+      "epochs": 3,
+      "batch_size": 256,
+      "device": "cuda",
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.7261969527482987,
+          "train_accuracy": 0.79625,
+          "test_loss": 0.20107815901041032,
+          "test_accuracy": 0.9505
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.22194897669156394,
+          "train_accuracy": 0.9378666666666666,
+          "test_loss": 0.12053270120620728,
+          "test_accuracy": 0.9678
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.15942440945307415,
+          "train_accuracy": 0.9546333333333333,
+          "test_loss": 0.09327337716519833,
+          "test_accuracy": 0.9728
+        }
+      ],
+      "final_train_accuracy": 0.9546333333333333,
+      "final_test_accuracy": 0.9728,
+      "final_test_loss": 0.09327337716519833,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    }
+  ]
+}

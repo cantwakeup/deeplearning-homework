@@ -48,6 +48,12 @@ conda activate /home/huiwei/sy/Deepl/.conda-env
 .conda-env/bin/python 02_mnist_cnn/train_cnn.py --epochs 3
 ```
 
+第二题多种情况分析：
+
+```bash
+.conda-env/bin/python 02_mnist_cnn/sweep_cnn.py --epochs 3 --batch-size 256 --num-workers 4
+```
+
 第三题：
 
 ```bash
@@ -58,6 +64,7 @@ conda activate /home/huiwei/sy/Deepl/.conda-env
 
 每个实验都会把训练结果保存到对应目录的 `outputs/` 中。模型权重文件可能较大，默认不纳入 git。
 CNN 的多轮训练对比结果保存在 `02_mnist_cnn/outputs/cnn_mnist_epoch_comparison.csv`。
+CNN 的优化器和学习率对比结果保存在 `02_mnist_cnn/outputs/cnn_sweep/`。
 
 ## 当前结果
 
@@ -66,6 +73,8 @@ CNN 的多轮训练对比结果保存在 `02_mnist_cnn/outputs/cnn_mnist_epoch_c
 | NumPy MLP | 三分类螺旋数据 | 1500 epochs, hidden_dim=64 | 0.9667 |
 | CNN | MNIST | GPU, 3 epochs, batch_size=256 | 0.9900 |
 | ResNet-50 | MNIST | GPU, 3 epochs, batch_size=256 | 0.9872 |
+
+CNN 额外完成了 9 组优化器/学习率对比。最好配置为 RMSprop + 0.0001，测试准确率为 0.9896；Adam + 0.001 为 0.9894，收敛速度和稳定性也很好。
 
 ## Git 提交
 

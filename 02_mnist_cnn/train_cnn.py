@@ -42,12 +42,23 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
+    parser.add_argument("--optimizer", choices=["adam", "sgd", "rmsprop"], default="adam")
     parser.add_argument("--data-dir", type=Path, default=Path(__file__).parent / "data")
     parser.add_argument("--output-dir", type=Path, default=Path(__file__).parent / "outputs")
     parser.add_argument("--limit-train", type=int, default=0, help="Use only N train samples for quick tests.")
     parser.add_argument("--limit-test", type=int, default=0, help="Use only N test samples for quick tests.")
     parser.add_argument("--num-workers", type=int, default=0, help="DataLoader worker processes.")
     return parser.parse_args()
+
+
+def build_optimizer(name: str, parameters, learning_rate: float) -> torch.optim.Optimizer:
+    if name == "adam":
+        return torch.optim.Adam(parameters, lr=learning_rate)
+    if name == "sgd":
+        return torch.optim.SGD(parameters, lr=learning_rate, momentum=0.9)
+    if name == "rmsprop":
+        return torch.optim.RMSprop(parameters, lr=learning_rate, momentum=0.9)
+    raise ValueError(f"Unsupported optimizer: {name}")
 
 
 def load_mnist(
@@ -157,7 +168,7 @@ def main() -> None:
     )
     model = SimpleCNN().to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
+    optimizer = build_optimizer(args.optimizer, model.parameters(), args.learning_rate)
 
     history = []
     for epoch in range(1, args.epochs + 1):
@@ -180,6 +191,7 @@ def main() -> None:
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "learning_rate": args.learning_rate,
+        "optimizer": args.optimizer,
         "num_workers": args.num_workers,
         "history": history,
         "final_test_accuracy": history[-1]["test_accuracy"],
