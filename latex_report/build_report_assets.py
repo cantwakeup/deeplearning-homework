@@ -86,9 +86,35 @@ def configure_plot() -> None:
             "grid.alpha": 0.25,
             "axes.spines.top": False,
             "axes.spines.right": False,
-            "font.size": 10,
+            "font.size": 9,
+            "axes.titlesize": 11,
+            "axes.labelsize": 10,
+            "xtick.labelsize": 9,
+            "ytick.labelsize": 9,
+            "legend.fontsize": 8,
         }
     )
+
+
+def cnn_arch_label(row: dict[str, str], rank: int | None = None) -> str:
+    prefix = f"C{rank}: " if rank is not None else ""
+    channels = row.get("channels", "").replace("-", "/")
+    kernel = row.get("kernel_size", "")
+    bn = "BN" if row.get("batch_norm") == "True" else "NoBN"
+    dropout = row.get("dropout", "")
+    pooling = "Pool" if row.get("pooling") == "True" else "NoPool"
+    return f"{prefix}k={kernel}, {channels}, {bn}, D={dropout}, {pooling}"
+
+
+def resnet_label(row: dict[str, str], rank: int | None = None) -> str:
+    prefix = f"R{rank}: " if rank is not None else ""
+    variant = row.get("variant", "").replace("resnet", "ResNet-")
+    if row.get("residual") == "False":
+        variant = variant.replace("ResNet-", "Plain-")
+    stem = "MNIST" if row.get("stem") == "mnist" else "ImageNet"
+    optimizer = row.get("optimizer", "")
+    lr = row.get("learning_rate", "")
+    return f"{prefix}{variant}, {stem}, {optimizer} {lr}"
 
 
 def plot_mlp_optimizer_lr(rows: list[dict[str, str]]) -> None:
@@ -213,15 +239,48 @@ def plot_cnn_hparam(rows: list[dict[str, str]]) -> None:
     plt.close()
 
 
+def plot_ranked_accuracy_bars(
+    rows: list[dict[str, str]],
+    value_field: str,
+    title: str,
+    filename: str,
+    label_kind: str,
+) -> None:
+    if not rows:
+        return
+    ranked_rows = list(enumerate(rows, start=1))
+    rows_sorted = sorted(ranked_rows, key=lambda item: to_float(item[1][value_field]))
+    if label_kind == "cnn":
+        labels = [f"C{rank}  {row['factor']}" for rank, row in rows_sorted]
+        color = "#2F6F9F"
+    else:
+        labels = [f"R{rank}  {row['factor']}" for rank, row in rows_sorted]
+        color = "#5A7D3A"
+    values = [to_float(row[value_field]) for _, row in rows_sorted]
+    fig, ax = plt.subplots(figsize=(7.2, max(3.6, 0.38 * len(rows_sorted))))
+    ax.barh(range(len(rows_sorted)), values, color=color, height=0.62)
+    ax.set_yticks(range(len(rows_sorted)), labels)
+    ax.set_xlabel("Test accuracy")
+    ax.set_title(title)
+    ax.set_xlim(min(values) - 0.004, min(1.0, max(values) + 0.0035))
+    ax.grid(axis="x", alpha=0.25)
+    ax.grid(axis="y", visible=False)
+    for i, value in enumerate(values):
+        ax.text(value + 0.00035, i, f"{value:.4f}", va="center", fontsize=8)
+    fig.subplots_adjust(left=0.18, right=0.96, top=0.88, bottom=0.16)
+    fig.savefig(FIGURE_DIR / filename)
+    plt.close(fig)
+
+
 def plot_horizontal_accuracy(rows: list[dict[str, str]], label_field: str, value_field: str, title: str, filename: str) -> None:
     if not rows:
         return
     rows_sorted = sorted(rows, key=lambda row: to_float(row[value_field]))
-    labels = [row[label_field].replace("_", "\n") for row in rows_sorted]
+    labels = [row[label_field].replace("_", " ") for row in rows_sorted]
     values = [to_float(row[value_field]) for row in rows_sorted]
-    plt.figure(figsize=(7.0, max(3.4, 0.45 * len(rows_sorted))))
+    plt.figure(figsize=(8.0, max(3.4, 0.45 * len(rows_sorted))))
     plt.barh(range(len(rows_sorted)), values, color="#3572A5")
-    plt.yticks(range(len(rows_sorted)), labels, fontsize=8)
+    plt.yticks(range(len(rows_sorted)), labels, fontsize=7)
     plt.xlabel("Test accuracy")
     plt.title(title)
     for i, value in enumerate(values):
@@ -235,18 +294,29 @@ def plot_horizontal_accuracy(rows: list[dict[str, str]], label_field: str, value
 def plot_resnet_params(rows: list[dict[str, str]]) -> None:
     if not rows:
         return
-    plt.figure(figsize=(5.5, 3.6))
-    for row in rows:
+    fig, ax = plt.subplots(figsize=(6.6, 4.2))
+    for rank, row in enumerate(rows, start=1):
         params_m = to_float(row["parameter_count"]) / 1_000_000.0
         acc = to_float(row["final_test_accuracy"])
-        plt.scatter(params_m, acc, s=56)
-        plt.text(params_m, acc + 0.0004, row["name"].replace("_", "\n"), fontsize=7, ha="center")
-    plt.xlabel("Parameters (M)")
-    plt.ylabel("Test accuracy")
-    plt.title("ResNet parameter count vs accuracy")
-    plt.tight_layout()
-    plt.savefig(FIGURE_DIR / "resnet_params_accuracy.png")
-    plt.close()
+        ax.scatter(params_m, acc, s=58)
+        x_offset = 6 if rank in {7, 8} else 5
+        y_offset = 6 if rank % 2 else -11
+        ax.annotate(
+            f"R{rank}",
+            (params_m, acc),
+            textcoords="offset points",
+            xytext=(x_offset, y_offset),
+            fontsize=8,
+            weight="bold",
+        )
+    ax.set_xlabel("Parameters (M)")
+    ax.set_ylabel("Test accuracy")
+    ax.set_title("ResNet parameter count vs accuracy")
+    ax.set_ylim(min(to_float(row["final_test_accuracy"]) for row in rows) - 0.002, 0.995)
+    ax.grid(alpha=0.25)
+    fig.subplots_adjust(left=0.12, right=0.97, top=0.88, bottom=0.14)
+    fig.savefig(FIGURE_DIR / "resnet_params_accuracy.png")
+    plt.close(fig)
 
 
 def build_tables(
@@ -306,33 +376,33 @@ def build_tables(
 
     save_table(
         TABLE_DIR / "cnn_arch_top.tex",
-        ["配置", "消融因素", "参数量", "测试准确率", "测试损失"],
+        ["编号与配置", "消融因素", "参数量", "测试准确率", "测试损失"],
         [
             [
-                row["name"],
+                cnn_arch_label(row, rank),
                 row["factor"],
                 row["parameter_count"],
                 fmt_acc(row["final_test_accuracy"]),
                 f"{to_float(row['final_test_loss']):.4f}",
             ]
-            for row in cnn_arch[:7]
+            for rank, row in enumerate(cnn_arch[:7], start=1)
         ],
         "lllll",
     )
 
     save_table(
         TABLE_DIR / "resnet_top.tex",
-        ["配置", "因素", "参数量", "优化器", "学习率", "测试准确率"],
+        ["编号与配置", "因素", "参数量", "优化器", "学习率", "测试准确率"],
         [
             [
-                row["name"],
+                resnet_label(row, rank),
                 row["factor"],
                 row["parameter_count"],
                 row["optimizer"],
                 row["learning_rate"],
                 fmt_acc(row["final_test_accuracy"]),
             ]
-            for row in resnet_rows[:8]
+            for rank, row in enumerate(resnet_rows[:8], start=1)
         ],
         "llllll",
     )
@@ -440,8 +510,8 @@ MLP 最优配置为 \texttt{{{latex_escape(mlp_best.get("activation", "--"))}}} 
 
 \begin{{figure}}[H]
 \centering
-\includegraphics[width=0.82\linewidth]{{figures/cnn_arch_ablation.png}}
-\caption{{CNN 架构消融测试准确率}}
+\includegraphics[width=0.88\linewidth]{{figures/cnn_arch_ablation.png}}
+\caption{{CNN 架构消融测试准确率，C 编号对应上方表格}}
 \end{{figure}}
 
 \section{{实验三：ResNet-MNIST}}
@@ -459,14 +529,14 @@ ResNet sweep 中最佳配置为 \texttt{{{latex_escape(resnet_best.get("name", "
 
 \begin{{figure}}[H]
 \centering
-\includegraphics[width=0.84\linewidth]{{figures/resnet_ablation.png}}
-\caption{{ResNet 不同配置测试准确率}}
+\includegraphics[width=0.88\linewidth]{{figures/resnet_ablation.png}}
+\caption{{ResNet 不同配置测试准确率，R 编号对应上方表格}}
 \end{{figure}}
 
 \begin{{figure}}[H]
 \centering
-\includegraphics[width=0.72\linewidth]{{figures/resnet_params_accuracy.png}}
-\caption{{ResNet 参数量与测试准确率关系}}
+\includegraphics[width=0.80\linewidth]{{figures/resnet_params_accuracy.png}}
+\caption{{ResNet 参数量与测试准确率关系，R 编号对应上方表格}}
 \end{{figure}}
 
 \section{{综合分析与汇报思路}}
@@ -516,8 +586,8 @@ def main() -> None:
     plot_mlp_activation_hidden(mlp_rows)
     plot_mlp_decision_boundary(best_or_empty(mlp_repeat or mlp_rows))
     plot_cnn_hparam(cnn_hparam)
-    plot_horizontal_accuracy(cnn_arch, "name", "final_test_accuracy", "CNN architecture ablation", "cnn_arch_ablation.png")
-    plot_horizontal_accuracy(resnet_rows, "name", "final_test_accuracy", "ResNet ablation", "resnet_ablation.png")
+    plot_ranked_accuracy_bars(cnn_arch, "final_test_accuracy", "CNN architecture ablation", "cnn_arch_ablation.png", "cnn")
+    plot_ranked_accuracy_bars(resnet_rows, "final_test_accuracy", "ResNet ablation", "resnet_ablation.png", "resnet")
     plot_resnet_params(resnet_rows)
     build_main_tex(mlp_repeat, mlp_rows, cnn_hparam, cnn_arch, resnet_rows)
     print(json.dumps({"report_dir": str(REPORT_DIR), "figures": len(list(FIGURE_DIR.glob("*.png")))}, ensure_ascii=False))

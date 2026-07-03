@@ -1,13 +1,13 @@
 \begin{tabular}{lllll}
 \toprule
-配置 & 消融因素 & 参数量 & 测试准确率 & 测试损失 \\
+编号与配置 & 消融因素 & 参数量 & 测试准确率 & 测试损失 \\
 \midrule
-kernel5\_c32-64\_bn\_do25\_pool & kernel\_size & 455114 & 99.15\% & 0.0253 \\
-wide\_k3\_c64-128\_bn\_do25\_pool & channels & 879114 & 99.07\% & 0.0289 \\
-baseline\_k3\_c32-64\_bn\_do25\_pool & baseline & 421834 & 98.96\% & 0.0298 \\
-no\_batch\_norm\_k3\_c32-64\_do25\_pool & batch\_norm & 421642 & 98.95\% & 0.0320 \\
-dropout50\_k3\_c32-64\_bn\_pool & dropout & 421834 & 98.95\% & 0.0323 \\
-dropout0\_k3\_c32-64\_bn\_pool & dropout & 421834 & 98.86\% & 0.0377 \\
-narrow\_k3\_c16-32\_bn\_do25\_pool & channels & 207018 & 98.72\% & 0.0370 \\
+C1: k=5, 32/64, BN, D=0.25, Pool & kernel\_size & 455114 & 99.15\% & 0.0253 \\
+C2: k=3, 64/128, BN, D=0.25, Pool & channels & 879114 & 99.07\% & 0.0289 \\
+C3: k=3, 32/64, BN, D=0.25, Pool & baseline & 421834 & 98.96\% & 0.0298 \\
+C4: k=3, 32/64, NoBN, D=0.25, Pool & batch\_norm & 421642 & 98.95\% & 0.0320 \\
+C5: k=3, 32/64, BN, D=0.5, Pool & dropout & 421834 & 98.95\% & 0.0323 \\
+C6: k=3, 32/64, BN, D=0.0, Pool & dropout & 421834 & 98.86\% & 0.0377 \\
+C7: k=3, 16/32, BN, D=0.25, Pool & channels & 207018 & 98.72\% & 0.0370 \\
 \bottomrule
 \end{tabular}
