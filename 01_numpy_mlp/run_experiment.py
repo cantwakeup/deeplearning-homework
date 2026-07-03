@@ -13,6 +13,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=1500)
     parser.add_argument("--hidden-dim", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=0.05)
+    parser.add_argument("--activation", choices=["relu", "tanh", "sigmoid"], default="relu")
+    parser.add_argument("--optimizer", choices=["gd", "momentum", "adam"], default="gd")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output-dir", type=Path, default=Path(__file__).parent / "outputs")
     return parser.parse_args()
@@ -31,6 +33,8 @@ def main() -> None:
         hidden_dim=args.hidden_dim,
         output_dim=3,
         learning_rate=args.learning_rate,
+        activation=args.activation,
+        optimizer=args.optimizer,
         seed=args.seed,
     )
     history = model.fit(x_train, y_train, x_test, y_test, epochs=args.epochs)
@@ -42,6 +46,8 @@ def main() -> None:
         "test_samples": int(x_test.shape[0]),
         "hidden_dim": args.hidden_dim,
         "learning_rate": args.learning_rate,
+        "activation": args.activation,
+        "optimizer": args.optimizer,
         "epochs": args.epochs,
         "final_loss": final_metrics.loss,
         "final_train_accuracy": final_metrics.train_accuracy,

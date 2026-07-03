@@ -2,11 +2,47 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 from pathlib import Path
 
+import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Subset
+
+
+class BasicBlock(nn.Module):
+    expansion = 1
+
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        stride: int = 1,
+        downsample: nn.Module | None = None,
+        residual: bool = True,
+    ) -> None:
+        super().__init__()
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU(inplace=True)
+        self.downsample = downsample
+        self.residual = residual
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        identity = x
+
+        out = self.relu(self.bn1(self.conv1(x)))
+        out = self.bn2(self.conv2(out))
+
+        if self.residual:
+            if self.downsample is not None:
+                identity = self.downsample(x)
+            out += identity
+
+        return self.relu(out)
 
 
 class Bottleneck(nn.Module):
@@ -18,6 +54,7 @@ class Bottleneck(nn.Module):
         out_channels: int,
         stride: int = 1,
         downsample: nn.Module | None = None,
+        residual: bool = True,
     ) -> None:
         super().__init__()
         self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False)
@@ -28,6 +65,7 @@ class Bottleneck(nn.Module):
         self.bn3 = nn.BatchNorm2d(out_channels * self.expansion)
         self.relu = nn.ReLU(inplace=True)
         self.downsample = downsample
+        self.residual = residual
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         identity = x
@@ -36,30 +74,51 @@ class Bottleneck(nn.Module):
         out = self.relu(self.bn2(self.conv2(out)))
         out = self.bn3(self.conv3(out))
 
-        if self.downsample is not None:
-            identity = self.downsample(x)
-
-        # 残差连接保留原始特征，缓解深层网络训练中的梯度衰减问题。
-        out += identity
+        if self.residual:
+            if self.downsample is not None:
+                identity = self.downsample(x)
+            # 残差连接保留原始特征，缓解深层网络训练中的梯度衰减问题。
+            out += identity
         return self.relu(out)
 
 
 class ResNetMNIST(nn.Module):
-    def __init__(self, layers: list[int], num_classes: int = 10) -> None:
+    def __init__(
+        self,
+        block: type[BasicBlock] | type[Bottleneck],
+        layers: list[int],
+        num_classes: int = 10,
+        residual: bool = True,
+        stem_type: str = "mnist",
+    ) -> None:
         super().__init__()
         self.in_channels = 64
-        # MNIST 是 1 通道 28x28 图像，因此 stem 使用 1 通道输入和较小的 3x3 卷积。
-        self.stem = nn.Sequential(
-            nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False),
-            nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True),
-        )
+        self.block = block
+        self.residual = residual
+        self.stem_type = stem_type
+        if stem_type == "mnist":
+            # MNIST 是 1 通道 28x28 图像，因此 stem 使用 1 通道输入和较小的 3x3 卷积。
+            self.stem = nn.Sequential(
+                nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False),
+                nn.BatchNorm2d(64),
+                nn.ReLU(inplace=True),
+            )
+        elif stem_type == "imagenet":
+            self.stem = nn.Sequential(
+                nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False),
+                nn.BatchNorm2d(64),
+                nn.ReLU(inplace=True),
+                nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
+            )
+        else:
+            raise ValueError(f"Unsupported stem_type: {stem_type}")
+
         self.layer1 = self._make_layer(64, layers[0], stride=1)
         self.layer2 = self._make_layer(128, layers[1], stride=2)
         self.layer3 = self._make_layer(256, layers[2], stride=2)
         self.layer4 = self._make_layer(512, layers[3], stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512 * Bottleneck.expansion, num_classes)
+        self.fc = nn.Linear(512 * block.expansion, num_classes)
 
         for module in self.modules():
             if isinstance(module, nn.Conv2d):
@@ -70,17 +129,25 @@ class ResNetMNIST(nn.Module):
 
     def _make_layer(self, out_channels: int, blocks: int, stride: int) -> nn.Sequential:
         downsample = None
-        expanded_channels = out_channels * Bottleneck.expansion
+        expanded_channels = out_channels * self.block.expansion
         if stride != 1 or self.in_channels != expanded_channels:
             downsample = nn.Sequential(
                 nn.Conv2d(self.in_channels, expanded_channels, kernel_size=1, stride=stride, bias=False),
                 nn.BatchNorm2d(expanded_channels),
             )
 
-        layers = [Bottleneck(self.in_channels, out_channels, stride=stride, downsample=downsample)]
+        layers = [
+            self.block(
+                self.in_channels,
+                out_channels,
+                stride=stride,
+                downsample=downsample,
+                residual=self.residual,
+            )
+        ]
         self.in_channels = expanded_channels
         for _ in range(1, blocks):
-            layers.append(Bottleneck(self.in_channels, out_channels))
+            layers.append(self.block(self.in_channels, out_channels, residual=self.residual))
         return nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -94,8 +161,18 @@ class ResNetMNIST(nn.Module):
         return self.fc(x)
 
 
+def build_resnet_mnist(variant: str = "resnet50", residual: bool = True, stem_type: str = "mnist") -> ResNetMNIST:
+    if variant == "resnet18":
+        return ResNetMNIST(BasicBlock, [2, 2, 2, 2], residual=residual, stem_type=stem_type)
+    if variant == "resnet34":
+        return ResNetMNIST(BasicBlock, [3, 4, 6, 3], residual=residual, stem_type=stem_type)
+    if variant == "resnet50":
+        return ResNetMNIST(Bottleneck, [3, 4, 6, 3], residual=residual, stem_type=stem_type)
+    raise ValueError(f"Unsupported ResNet variant: {variant}")
+
+
 def resnet50_mnist() -> ResNetMNIST:
-    return ResNetMNIST([3, 4, 6, 3])
+    return build_resnet_mnist("resnet50")
 
 
 def parse_args() -> argparse.Namespace:
@@ -103,12 +180,34 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=3)
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
-    parser.add_argument("--data-dir", type=Path, default=Path(__file__).parent / "data")
+    parser.add_argument("--optimizer", choices=["adam", "sgd", "rmsprop"], default="adam")
+    parser.add_argument("--variant", choices=["resnet18", "resnet34", "resnet50"], default="resnet50")
+    parser.add_argument("--plain", action="store_true", help="Disable residual additions for a plain-network ablation.")
+    parser.add_argument("--stem", choices=["mnist", "imagenet"], default="mnist")
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--data-dir", type=Path, default=Path(__file__).parents[1] / "02_mnist_cnn" / "data")
     parser.add_argument("--output-dir", type=Path, default=Path(__file__).parent / "outputs")
     parser.add_argument("--limit-train", type=int, default=0, help="Use only N train samples for quick tests.")
     parser.add_argument("--limit-test", type=int, default=0, help="Use only N test samples for quick tests.")
     parser.add_argument("--num-workers", type=int, default=0, help="DataLoader worker processes.")
     return parser.parse_args()
+
+
+def set_seed(seed: int) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+
+
+def build_optimizer(name: str, parameters, learning_rate: float) -> torch.optim.Optimizer:
+    if name == "adam":
+        return torch.optim.Adam(parameters, lr=learning_rate)
+    if name == "sgd":
+        return torch.optim.SGD(parameters, lr=learning_rate, momentum=0.9)
+    if name == "rmsprop":
+        return torch.optim.RMSprop(parameters, lr=learning_rate, momentum=0.9)
+    raise ValueError(f"Unsupported optimizer: {name}")
 
 
 def load_mnist(
@@ -207,6 +306,7 @@ def predict_examples(model: nn.Module, loader: DataLoader, device: torch.device,
 def main() -> None:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    set_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_loader, test_loader = load_mnist(
@@ -216,9 +316,13 @@ def main() -> None:
         args.limit_test,
         args.num_workers,
     )
-    model = resnet50_mnist().to(device)
+    model = build_resnet_mnist(
+        variant=args.variant,
+        residual=not args.plain,
+        stem_type=args.stem,
+    ).to(device)
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
+    optimizer = build_optimizer(args.optimizer, model.parameters(), args.learning_rate)
 
     history = []
     for epoch in range(1, args.epochs + 1):
@@ -235,20 +339,29 @@ def main() -> None:
         print(json.dumps(item, ensure_ascii=False))
 
     result = {
-        "model": "ResNet-50",
+        "model": args.variant,
         "dataset": "MNIST",
         "device": str(device),
         "epochs": args.epochs,
         "batch_size": args.batch_size,
         "learning_rate": args.learning_rate,
+        "optimizer": args.optimizer,
+        "seed": args.seed,
+        "architecture": {
+            "variant": args.variant,
+            "residual": not args.plain,
+            "stem": args.stem,
+            "parameter_count": sum(parameter.numel() for parameter in model.parameters()),
+        },
         "num_workers": args.num_workers,
         "history": history,
         "final_test_accuracy": history[-1]["test_accuracy"],
         "sample_predictions": predict_examples(model, test_loader, device),
     }
-    with (args.output_dir / "resnet50_mnist_results.json").open("w", encoding="utf-8") as f:
+    output_stem = args.variant if not args.plain else f"plain_{args.variant}"
+    with (args.output_dir / f"{output_stem}_mnist_results.json").open("w", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, indent=2)
-    torch.save(model.state_dict(), args.output_dir / "resnet50_mnist.pt")
+    torch.save(model.state_dict(), args.output_dir / f"{output_stem}_mnist.pt")
 
 
 if __name__ == "__main__":

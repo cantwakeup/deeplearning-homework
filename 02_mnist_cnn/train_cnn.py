@@ -2,33 +2,56 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 from pathlib import Path
 
+import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Subset
 
 
 class SimpleCNN(nn.Module):
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        channels: tuple[int, int] = (32, 64),
+        kernel_size: int = 3,
+        batch_norm: bool = True,
+        dropout: float = 0.25,
+        pooling: bool = True,
+    ) -> None:
         super().__init__()
-        # 两组卷积块逐步提取笔画局部特征，池化后尺寸从 28x28 降到 7x7。
+        self.channels = channels
+        self.kernel_size = kernel_size
+        self.batch_norm = batch_norm
+        self.dropout = dropout
+        self.pooling = pooling
+        padding = kernel_size // 2
+
+        def conv_block(in_channels: int, out_channels: int) -> list[nn.Module]:
+            layers: list[nn.Module] = [
+                nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding),
+            ]
+            if batch_norm:
+                layers.append(nn.BatchNorm2d(out_channels))
+            layers.append(nn.ReLU())
+            if pooling:
+                layers.append(nn.MaxPool2d(2))
+            return layers
+
+        # 两组卷积块用于比较卷积核、通道数、归一化、Dropout 和下采样对 MNIST 的影响。
         self.features = nn.Sequential(
-            nn.Conv2d(1, 32, kernel_size=3, padding=1),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(32, 64, kernel_size=3, padding=1),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
+            *conv_block(1, channels[0]),
+            *conv_block(channels[0], channels[1]),
         )
+        with torch.no_grad():
+            feature_dim = int(self.features(torch.zeros(1, 1, 28, 28)).numel())
         self.classifier = nn.Sequential(
             nn.Flatten(),
-            nn.Dropout(0.25),
-            nn.Linear(64 * 7 * 7, 128),
+            nn.Dropout(dropout),
+            nn.Linear(feature_dim, 128),
             nn.ReLU(),
-            nn.Dropout(0.25),
+            nn.Dropout(dropout),
             nn.Linear(128, 10),
         )
 
@@ -43,12 +66,25 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=128)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--optimizer", choices=["adam", "sgd", "rmsprop"], default="adam")
+    parser.add_argument("--kernel-size", type=int, choices=[3, 5], default=3)
+    parser.add_argument("--channels", type=int, nargs=2, default=[32, 64], metavar=("C1", "C2"))
+    parser.add_argument("--dropout", type=float, default=0.25)
+    parser.add_argument("--no-batch-norm", action="store_true")
+    parser.add_argument("--no-pooling", action="store_true")
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--data-dir", type=Path, default=Path(__file__).parent / "data")
     parser.add_argument("--output-dir", type=Path, default=Path(__file__).parent / "outputs")
     parser.add_argument("--limit-train", type=int, default=0, help="Use only N train samples for quick tests.")
     parser.add_argument("--limit-test", type=int, default=0, help="Use only N test samples for quick tests.")
     parser.add_argument("--num-workers", type=int, default=0, help="DataLoader worker processes.")
     return parser.parse_args()
+
+
+def set_seed(seed: int) -> None:
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
 
 
 def build_optimizer(name: str, parameters, learning_rate: float) -> torch.optim.Optimizer:
@@ -157,6 +193,7 @@ def predict_examples(model: nn.Module, loader: DataLoader, device: torch.device,
 def main() -> None:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    set_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     train_loader, test_loader = load_mnist(
@@ -166,7 +203,13 @@ def main() -> None:
         args.limit_test,
         args.num_workers,
     )
-    model = SimpleCNN().to(device)
+    model = SimpleCNN(
+        channels=tuple(args.channels),
+        kernel_size=args.kernel_size,
+        batch_norm=not args.no_batch_norm,
+        dropout=args.dropout,
+        pooling=not args.no_pooling,
+    ).to(device)
     criterion = nn.CrossEntropyLoss()
     optimizer = build_optimizer(args.optimizer, model.parameters(), args.learning_rate)
 
@@ -192,6 +235,15 @@ def main() -> None:
         "batch_size": args.batch_size,
         "learning_rate": args.learning_rate,
         "optimizer": args.optimizer,
+        "seed": args.seed,
+        "architecture": {
+            "channels": args.channels,
+            "kernel_size": args.kernel_size,
+            "batch_norm": not args.no_batch_norm,
+            "dropout": args.dropout,
+            "pooling": not args.no_pooling,
+            "parameter_count": sum(parameter.numel() for parameter in model.parameters()),
+        },
         "num_workers": args.num_workers,
         "history": history,
         "final_test_accuracy": history[-1]["test_accuracy"],

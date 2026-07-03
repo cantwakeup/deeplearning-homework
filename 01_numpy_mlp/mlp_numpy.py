@@ -74,19 +74,43 @@ class NumpyMLP:
         output_dim: int,
         learning_rate: float = 0.05,
         l2: float = 1e-4,
+        activation: str = "relu",
+        optimizer: str = "gd",
+        momentum: float = 0.9,
         seed: int = 42,
     ) -> None:
         rng = np.random.default_rng(seed)
         self.learning_rate = learning_rate
         self.l2 = l2
+        self.activation = activation
+        self.optimizer = optimizer
+        self.momentum = momentum
+        self.adam_beta1 = 0.9
+        self.adam_beta2 = 0.999
+        self.adam_eps = 1e-8
+        self.step = 0
         self.w1 = rng.normal(0.0, np.sqrt(2.0 / input_dim), (input_dim, hidden_dim))
         self.b1 = np.zeros((1, hidden_dim), dtype=np.float64)
         self.w2 = rng.normal(0.0, np.sqrt(2.0 / hidden_dim), (hidden_dim, output_dim))
         self.b2 = np.zeros((1, output_dim), dtype=np.float64)
+        self.velocity = {
+            "w1": np.zeros_like(self.w1),
+            "b1": np.zeros_like(self.b1),
+            "w2": np.zeros_like(self.w2),
+            "b2": np.zeros_like(self.b2),
+        }
+        self.first_moment = {name: np.zeros_like(value) for name, value in self.velocity.items()}
+        self.second_moment = {name: np.zeros_like(value) for name, value in self.velocity.items()}
+
+        if self.activation not in {"relu", "tanh", "sigmoid"}:
+            raise ValueError(f"Unsupported activation: {self.activation}")
+        if self.optimizer not in {"gd", "momentum", "adam"}:
+            raise ValueError(f"Unsupported optimizer: {self.optimizer}")
 
     @staticmethod
     def sigmoid(x: np.ndarray) -> np.ndarray:
-        return 1.0 / (1.0 + np.exp(-x))
+        clipped = np.clip(x, -50.0, 50.0)
+        return 1.0 / (1.0 + np.exp(-clipped))
 
     @staticmethod
     def relu(x: np.ndarray) -> np.ndarray:
@@ -97,15 +121,39 @@ class NumpyMLP:
         return (x > 0.0).astype(np.float64)
 
     @staticmethod
+    def sigmoid_grad(x: np.ndarray) -> np.ndarray:
+        activated = NumpyMLP.sigmoid(x)
+        return activated * (1.0 - activated)
+
+    @staticmethod
+    def tanh_grad(x: np.ndarray) -> np.ndarray:
+        activated = np.tanh(x)
+        return 1.0 - activated * activated
+
+    @staticmethod
     def softmax(logits: np.ndarray) -> np.ndarray:
         shifted = logits - logits.max(axis=1, keepdims=True)
         exp = np.exp(shifted)
         return exp / exp.sum(axis=1, keepdims=True)
 
+    def activate(self, x: np.ndarray) -> np.ndarray:
+        if self.activation == "relu":
+            return self.relu(x)
+        if self.activation == "tanh":
+            return np.tanh(x)
+        return self.sigmoid(x)
+
+    def activation_grad(self, x: np.ndarray) -> np.ndarray:
+        if self.activation == "relu":
+            return self.relu_grad(x)
+        if self.activation == "tanh":
+            return self.tanh_grad(x)
+        return self.sigmoid_grad(x)
+
     def forward(self, x: np.ndarray) -> tuple[np.ndarray, dict[str, np.ndarray]]:
-        # 前向传播：输入层 -> 隐含层 ReLU -> 输出层 Softmax。
+        # 前向传播：输入层 -> 隐含层激活 -> 输出层 Softmax。
         z1 = x @ self.w1 + self.b1
-        a1 = self.relu(z1)
+        a1 = self.activate(z1)
         logits = a1 @ self.w2 + self.b2
         probabilities = self.softmax(logits)
         cache = {"x": x, "z1": z1, "a1": a1, "probabilities": probabilities}
@@ -130,14 +178,28 @@ class NumpyMLP:
         d_w2 = a1.T @ d_logits + self.l2 * self.w2
         d_b2 = d_logits.sum(axis=0, keepdims=True)
         d_a1 = d_logits @ self.w2.T
-        d_z1 = d_a1 * self.relu_grad(z1)
+        d_z1 = d_a1 * self.activation_grad(z1)
         d_w1 = x.T @ d_z1 + self.l2 * self.w1
         d_b1 = d_z1.sum(axis=0, keepdims=True)
 
-        self.w1 -= self.learning_rate * d_w1
-        self.b1 -= self.learning_rate * d_b1
-        self.w2 -= self.learning_rate * d_w2
-        self.b2 -= self.learning_rate * d_b2
+        self.apply_gradients({"w1": d_w1, "b1": d_b1, "w2": d_w2, "b2": d_b2})
+
+    def apply_gradients(self, gradients: dict[str, np.ndarray]) -> None:
+        params = {"w1": self.w1, "b1": self.b1, "w2": self.w2, "b2": self.b2}
+        self.step += 1
+
+        for name, grad in gradients.items():
+            if self.optimizer == "gd":
+                params[name] -= self.learning_rate * grad
+            elif self.optimizer == "momentum":
+                self.velocity[name] = self.momentum * self.velocity[name] - self.learning_rate * grad
+                params[name] += self.velocity[name]
+            else:
+                self.first_moment[name] = self.adam_beta1 * self.first_moment[name] + (1.0 - self.adam_beta1) * grad
+                self.second_moment[name] = self.adam_beta2 * self.second_moment[name] + (1.0 - self.adam_beta2) * (grad * grad)
+                m_hat = self.first_moment[name] / (1.0 - self.adam_beta1**self.step)
+                v_hat = self.second_moment[name] / (1.0 - self.adam_beta2**self.step)
+                params[name] -= self.learning_rate * m_hat / (np.sqrt(v_hat) + self.adam_eps)
 
     def fit(
         self,

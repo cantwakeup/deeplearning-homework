@@ -1,0 +1,10 @@
+rank,name,factor,channels,kernel_size,batch_norm,dropout,pooling,parameter_count,optimizer,learning_rate,final_train_accuracy,final_test_accuracy,final_test_loss
+1,kernel5_c32-64_bn_do25_pool,kernel_size,32-64,5,True,0.25,True,455114,adam,0.001,0.9847666666666667,0.9915,0.025258175101410596
+2,wide_k3_c64-128_bn_do25_pool,channels,64-128,3,True,0.25,True,879114,adam,0.001,0.9830833333333333,0.9907,0.028907342948019506
+3,baseline_k3_c32-64_bn_do25_pool,baseline,32-64,3,True,0.25,True,421834,adam,0.001,0.9842666666666666,0.9896,0.029824917584098876
+4,no_batch_norm_k3_c32-64_do25_pool,batch_norm,32-64,3,False,0.25,True,421642,adam,0.001,0.9837666666666667,0.9895,0.031986613962519915
+5,dropout50_k3_c32-64_bn_pool,dropout,32-64,3,True,0.5,True,421834,adam,0.001,0.97255,0.9895,0.03232527298275381
+6,dropout0_k3_c32-64_bn_pool,dropout,32-64,3,True,0.0,True,421834,adam,0.001,0.9887166666666667,0.9886,0.037706351730786264
+7,narrow_k3_c16-32_bn_do25_pool,channels,16-32,3,True,0.25,True,207018,adam,0.001,0.979,0.9872,0.03704338272539899
+8,compact_k3_c16-32_bn_do0_pool,compact,16-32,3,True,0.0,True,207018,adam,0.001,0.9863833333333333,0.9857,0.043568569011613725
+9,no_pooling_k3_c32-64_bn_do25,pooling,32-64,3,True,0.25,False,6442954,adam,0.001,0.9799166666666667,0.9845,0.04522167058601044

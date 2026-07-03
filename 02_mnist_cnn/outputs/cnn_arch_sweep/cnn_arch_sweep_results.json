@@ -1,0 +1,787 @@
+{
+  "results": [
+    {
+      "name": "kernel5_c32-64_bn_do25_pool",
+      "factor": "kernel_size",
+      "channels": [
+        32,
+        64
+      ],
+      "kernel_size": 5,
+      "batch_norm": true,
+      "dropout": 0.25,
+      "pooling": true,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 455114,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.20352484702467918,
+          "train_accuracy": 0.9357666666666666,
+          "test_loss": 0.04741383249722421,
+          "test_accuracy": 0.9851
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.06346525625983875,
+          "train_accuracy": 0.9808333333333333,
+          "test_loss": 0.035241778884641826,
+          "test_accuracy": 0.9868
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.048563554687301315,
+          "train_accuracy": 0.9847666666666667,
+          "test_loss": 0.025258175101410596,
+          "test_accuracy": 0.9915
+        }
+      ],
+      "final_train_accuracy": 0.9847666666666667,
+      "final_test_accuracy": 0.9915,
+      "final_test_loss": 0.025258175101410596,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "wide_k3_c64-128_bn_do25_pool",
+      "factor": "channels",
+      "channels": [
+        64,
+        128
+      ],
+      "kernel_size": 3,
+      "batch_norm": true,
+      "dropout": 0.25,
+      "pooling": true,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 879114,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.23608874328235785,
+          "train_accuracy": 0.9281,
+          "test_loss": 0.05759714226415381,
+          "test_accuracy": 0.9819
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.07213601037661234,
+          "train_accuracy": 0.9784666666666667,
+          "test_loss": 0.041448319190274925,
+          "test_accuracy": 0.9858
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.05550056801040967,
+          "train_accuracy": 0.9830833333333333,
+          "test_loss": 0.028907342948019506,
+          "test_accuracy": 0.9907
+        }
+      ],
+      "final_train_accuracy": 0.9830833333333333,
+      "final_test_accuracy": 0.9907,
+      "final_test_loss": 0.028907342948019506,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "baseline_k3_c32-64_bn_do25_pool",
+      "factor": "baseline",
+      "channels": [
+        32,
+        64
+      ],
+      "kernel_size": 3,
+      "batch_norm": true,
+      "dropout": 0.25,
+      "pooling": true,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 421834,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.195419550588727,
+          "train_accuracy": 0.9396666666666667,
+          "test_loss": 0.0553633093515411,
+          "test_accuracy": 0.9806
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.0656343254049619,
+          "train_accuracy": 0.9798833333333333,
+          "test_loss": 0.03635482885222882,
+          "test_accuracy": 0.9879
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.05125198062757651,
+          "train_accuracy": 0.9842666666666666,
+          "test_loss": 0.029824917584098876,
+          "test_accuracy": 0.9896
+        }
+      ],
+      "final_train_accuracy": 0.9842666666666666,
+      "final_test_accuracy": 0.9896,
+      "final_test_loss": 0.029824917584098876,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "no_batch_norm_k3_c32-64_do25_pool",
+      "factor": "batch_norm",
+      "channels": [
+        32,
+        64
+      ],
+      "kernel_size": 3,
+      "batch_norm": false,
+      "dropout": 0.25,
+      "pooling": true,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 421642,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.26188927099704745,
+          "train_accuracy": 0.9203166666666667,
+          "test_loss": 0.06525413128808141,
+          "test_accuracy": 0.9781
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.07248787430127462,
+          "train_accuracy": 0.9776333333333334,
+          "test_loss": 0.04011883050305769,
+          "test_accuracy": 0.9854
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.05283450627128283,
+          "train_accuracy": 0.9837666666666667,
+          "test_loss": 0.031986613962519915,
+          "test_accuracy": 0.9895
+        }
+      ],
+      "final_train_accuracy": 0.9837666666666667,
+      "final_test_accuracy": 0.9895,
+      "final_test_loss": 0.031986613962519915,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "dropout50_k3_c32-64_bn_pool",
+      "factor": "dropout",
+      "channels": [
+        32,
+        64
+      ],
+      "kernel_size": 3,
+      "batch_norm": true,
+      "dropout": 0.5,
+      "pooling": true,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 421834,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.2797372737169266,
+          "train_accuracy": 0.9124333333333333,
+          "test_loss": 0.057605293227173386,
+          "test_accuracy": 0.9823
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.10992330219745636,
+          "train_accuracy": 0.9670666666666666,
+          "test_loss": 0.04106776663418859,
+          "test_accuracy": 0.9863
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.08825480310718219,
+          "train_accuracy": 0.97255,
+          "test_loss": 0.03232527298275381,
+          "test_accuracy": 0.9895
+        }
+      ],
+      "final_train_accuracy": 0.97255,
+      "final_test_accuracy": 0.9895,
+      "final_test_loss": 0.03232527298275381,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "dropout0_k3_c32-64_bn_pool",
+      "factor": "dropout",
+      "channels": [
+        32,
+        64
+      ],
+      "kernel_size": 3,
+      "batch_norm": true,
+      "dropout": 0.0,
+      "pooling": true,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 421834,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.15871240241130194,
+          "train_accuracy": 0.9514,
+          "test_loss": 0.06036990772616118,
+          "test_accuracy": 0.9799
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.04763948854207992,
+          "train_accuracy": 0.9850166666666667,
+          "test_loss": 0.04293976612444967,
+          "test_accuracy": 0.9861
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.03494169526894887,
+          "train_accuracy": 0.9887166666666667,
+          "test_loss": 0.037706351730786264,
+          "test_accuracy": 0.9886
+        }
+      ],
+      "final_train_accuracy": 0.9887166666666667,
+      "final_test_accuracy": 0.9886,
+      "final_test_loss": 0.037706351730786264,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "narrow_k3_c16-32_bn_do25_pool",
+      "factor": "channels",
+      "channels": [
+        16,
+        32
+      ],
+      "kernel_size": 3,
+      "batch_norm": true,
+      "dropout": 0.25,
+      "pooling": true,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 207018,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.26420038740237556,
+          "train_accuracy": 0.9193333333333333,
+          "test_loss": 0.06339101785644889,
+          "test_accuracy": 0.9798
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.08672002327044805,
+          "train_accuracy": 0.9739833333333333,
+          "test_loss": 0.04641919044703245,
+          "test_accuracy": 0.9844
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.06851933037837346,
+          "train_accuracy": 0.979,
+          "test_loss": 0.03704338272539899,
+          "test_accuracy": 0.9872
+        }
+      ],
+      "final_train_accuracy": 0.979,
+      "final_test_accuracy": 0.9872,
+      "final_test_loss": 0.03704338272539899,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "compact_k3_c16-32_bn_do0_pool",
+      "factor": "compact",
+      "channels": [
+        16,
+        32
+      ],
+      "kernel_size": 3,
+      "batch_norm": true,
+      "dropout": 0.0,
+      "pooling": true,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 207018,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.20745987521807352,
+          "train_accuracy": 0.9406833333333333,
+          "test_loss": 0.061578650177642705,
+          "test_accuracy": 0.9814
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.058137393709023794,
+          "train_accuracy": 0.9821833333333333,
+          "test_loss": 0.04622018486261368,
+          "test_accuracy": 0.9849
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.044171910516421,
+          "train_accuracy": 0.9863833333333333,
+          "test_loss": 0.043568569011613725,
+          "test_accuracy": 0.9857
+        }
+      ],
+      "final_train_accuracy": 0.9863833333333333,
+      "final_test_accuracy": 0.9857,
+      "final_test_loss": 0.043568569011613725,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "no_pooling_k3_c32-64_bn_do25",
+      "factor": "pooling",
+      "channels": [
+        32,
+        64
+      ],
+      "kernel_size": 3,
+      "batch_norm": true,
+      "dropout": 0.25,
+      "pooling": false,
+      "epochs": 3,
+      "batch_size": 256,
+      "learning_rate": 0.001,
+      "optimizer": "adam",
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 6442954,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.36015716909567513,
+          "train_accuracy": 0.9135833333333333,
+          "test_loss": 0.07177166788685135,
+          "test_accuracy": 0.9773
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.0874117969473203,
+          "train_accuracy": 0.9732166666666666,
+          "test_loss": 0.05702727146083489,
+          "test_accuracy": 0.9818
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.06412238578399022,
+          "train_accuracy": 0.9799166666666667,
+          "test_loss": 0.04522167058601044,
+          "test_accuracy": 0.9845
+        }
+      ],
+      "final_train_accuracy": 0.9799166666666667,
+      "final_test_accuracy": 0.9845,
+      "final_test_loss": 0.04522167058601044,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    }
+  ]
+}

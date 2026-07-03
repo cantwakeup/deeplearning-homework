@@ -1,0 +1,9 @@
+rank,name,factor,variant,residual,stem,optimizer,learning_rate,parameter_count,final_train_accuracy,final_test_accuracy,final_test_loss
+1,resnet34_mnist_adam_1e-3,depth,resnet34,True,mnist,adam,0.001,21280970,0.9899,0.9931,0.022877104710042475
+2,resnet18_mnist_adam_1e-3,depth,resnet18,True,mnist,adam,0.001,11172810,0.9922333333333333,0.9917,0.02620177775248885
+3,resnet18_mnist_sgd_1e-2,optimizer,resnet18,True,mnist,sgd,0.01,11172810,0.9957833333333334,0.9916,0.02769753354443237
+4,resnet18_mnist_rmsprop_1e-4,optimizer,resnet18,True,mnist,rmsprop,0.0001,11172810,0.9899666666666667,0.9894,0.032495595889282414
+5,resnet18_imagenet_stem_adam_1e-3,stem,resnet18,True,imagenet,adam,0.001,11175370,0.9895833333333334,0.9885,0.03459628745305818
+6,resnet18_mnist_adam_5e-4,learning_rate,resnet18,True,mnist,adam,0.0005,11172810,0.993,0.9876,0.03564270593971014
+7,resnet50_mnist_adam_1e-3,depth,resnet50,True,mnist,adam,0.001,23519690,0.9907333333333334,0.9858,0.05114590853694826
+8,plain18_mnist_adam_1e-3,residual,resnet18,False,mnist,adam,0.001,11172810,0.9902833333333333,0.9781,0.06740908570885658

@@ -1,0 +1,660 @@
+{
+  "results": [
+    {
+      "name": "resnet34_mnist_adam_1e-3",
+      "factor": "depth",
+      "variant": "resnet34",
+      "residual": true,
+      "stem": "mnist",
+      "optimizer": "adam",
+      "learning_rate": 0.001,
+      "epochs": 3,
+      "batch_size": 256,
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 21280970,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.13304769611557324,
+          "train_accuracy": 0.9585333333333333,
+          "test_loss": 0.04306330108698458,
+          "test_accuracy": 0.9873
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.03910005293091138,
+          "train_accuracy": 0.9878333333333333,
+          "test_loss": 0.05454564604386687,
+          "test_accuracy": 0.9843
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.03213156160376966,
+          "train_accuracy": 0.9899,
+          "test_loss": 0.022877104710042475,
+          "test_accuracy": 0.9931
+        }
+      ],
+      "final_train_accuracy": 0.9899,
+      "final_test_accuracy": 0.9931,
+      "final_test_loss": 0.022877104710042475,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "resnet18_mnist_adam_1e-3",
+      "factor": "depth",
+      "variant": "resnet18",
+      "residual": true,
+      "stem": "mnist",
+      "optimizer": "adam",
+      "learning_rate": 0.001,
+      "epochs": 3,
+      "batch_size": 256,
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 11172810,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.10736969476739565,
+          "train_accuracy": 0.9659666666666666,
+          "test_loss": 0.07685182946920395,
+          "test_accuracy": 0.9754
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.03398454236785571,
+          "train_accuracy": 0.9894,
+          "test_loss": 0.0522145498290658,
+          "test_accuracy": 0.9843
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.025227506880958876,
+          "train_accuracy": 0.9922333333333333,
+          "test_loss": 0.02620177775248885,
+          "test_accuracy": 0.9917
+        }
+      ],
+      "final_train_accuracy": 0.9922333333333333,
+      "final_test_accuracy": 0.9917,
+      "final_test_loss": 0.02620177775248885,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 6
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "resnet18_mnist_sgd_1e-2",
+      "factor": "optimizer",
+      "variant": "resnet18",
+      "residual": true,
+      "stem": "mnist",
+      "optimizer": "sgd",
+      "learning_rate": 0.01,
+      "epochs": 3,
+      "batch_size": 256,
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 11172810,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.33140794095297654,
+          "train_accuracy": 0.9006833333333333,
+          "test_loss": 0.06188941317945719,
+          "test_accuracy": 0.9818
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.03546653467615445,
+          "train_accuracy": 0.98985,
+          "test_loss": 0.04138589670807123,
+          "test_accuracy": 0.9869
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.017633620056013266,
+          "train_accuracy": 0.9957833333333334,
+          "test_loss": 0.02769753354443237,
+          "test_accuracy": 0.9916
+        }
+      ],
+      "final_train_accuracy": 0.9957833333333334,
+      "final_test_accuracy": 0.9916,
+      "final_test_loss": 0.02769753354443237,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "resnet18_mnist_rmsprop_1e-4",
+      "factor": "optimizer",
+      "variant": "resnet18",
+      "residual": true,
+      "stem": "mnist",
+      "optimizer": "rmsprop",
+      "learning_rate": 0.0001,
+      "epochs": 3,
+      "batch_size": 256,
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 11172810,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.11043159844279289,
+          "train_accuracy": 0.9649,
+          "test_loss": 0.05310204452723265,
+          "test_accuracy": 0.9838
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.03728409646352132,
+          "train_accuracy": 0.9883166666666666,
+          "test_loss": 0.06519713327437639,
+          "test_accuracy": 0.9783
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.031364511335392795,
+          "train_accuracy": 0.9899666666666667,
+          "test_loss": 0.032495595889282414,
+          "test_accuracy": 0.9894
+        }
+      ],
+      "final_train_accuracy": 0.9899666666666667,
+      "final_test_accuracy": 0.9894,
+      "final_test_loss": 0.032495595889282414,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "resnet18_imagenet_stem_adam_1e-3",
+      "factor": "stem",
+      "variant": "resnet18",
+      "residual": true,
+      "stem": "imagenet",
+      "optimizer": "adam",
+      "learning_rate": 0.001,
+      "epochs": 3,
+      "batch_size": 256,
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 11175370,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.12142970631122589,
+          "train_accuracy": 0.9619166666666666,
+          "test_loss": 0.0695777497112751,
+          "test_accuracy": 0.9772
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.04694359949082136,
+          "train_accuracy": 0.9856833333333334,
+          "test_loss": 0.04367568635372445,
+          "test_accuracy": 0.9864
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.034309721395621696,
+          "train_accuracy": 0.9895833333333334,
+          "test_loss": 0.03459628745305818,
+          "test_accuracy": 0.9885
+        }
+      ],
+      "final_train_accuracy": 0.9895833333333334,
+      "final_test_accuracy": 0.9885,
+      "final_test_loss": 0.03459628745305818,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "resnet18_mnist_adam_5e-4",
+      "factor": "learning_rate",
+      "variant": "resnet18",
+      "residual": true,
+      "stem": "mnist",
+      "optimizer": "adam",
+      "learning_rate": 0.0005,
+      "epochs": 3,
+      "batch_size": 256,
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 11172810,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.1140296062429746,
+          "train_accuracy": 0.9657166666666667,
+          "test_loss": 0.039958282086998226,
+          "test_accuracy": 0.9869
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.02989421869715055,
+          "train_accuracy": 0.9908833333333333,
+          "test_loss": 0.08010029497742653,
+          "test_accuracy": 0.9756
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.022023986987769605,
+          "train_accuracy": 0.993,
+          "test_loss": 0.03564270593971014,
+          "test_accuracy": 0.9876
+        }
+      ],
+      "final_train_accuracy": 0.993,
+      "final_test_accuracy": 0.9876,
+      "final_test_loss": 0.03564270593971014,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "resnet50_mnist_adam_1e-3",
+      "factor": "depth",
+      "variant": "resnet50",
+      "residual": true,
+      "stem": "mnist",
+      "optimizer": "adam",
+      "learning_rate": 0.001,
+      "epochs": 3,
+      "batch_size": 256,
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 23519690,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.16721226571003597,
+          "train_accuracy": 0.9469166666666666,
+          "test_loss": 0.0731767444871366,
+          "test_accuracy": 0.976
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.04904921171888709,
+          "train_accuracy": 0.9849166666666667,
+          "test_loss": 0.040217912699701264,
+          "test_accuracy": 0.988
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.030241438879196843,
+          "train_accuracy": 0.9907333333333334,
+          "test_loss": 0.05114590853694826,
+          "test_accuracy": 0.9858
+        }
+      ],
+      "final_train_accuracy": 0.9907333333333334,
+      "final_test_accuracy": 0.9858,
+      "final_test_loss": 0.05114590853694826,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    },
+    {
+      "name": "plain18_mnist_adam_1e-3",
+      "factor": "residual",
+      "variant": "resnet18",
+      "residual": false,
+      "stem": "mnist",
+      "optimizer": "adam",
+      "learning_rate": 0.001,
+      "epochs": 3,
+      "batch_size": 256,
+      "seed": 42,
+      "device": "cuda",
+      "parameter_count": 11172810,
+      "history": [
+        {
+          "epoch": 1,
+          "train_loss": 0.1322584406286478,
+          "train_accuracy": 0.9597333333333333,
+          "test_loss": 0.06484530845880508,
+          "test_accuracy": 0.9795
+        },
+        {
+          "epoch": 2,
+          "train_loss": 0.04053794901619355,
+          "train_accuracy": 0.9875333333333334,
+          "test_loss": 0.04363754366189242,
+          "test_accuracy": 0.9878
+        },
+        {
+          "epoch": 3,
+          "train_loss": 0.032635156272848444,
+          "train_accuracy": 0.9902833333333333,
+          "test_loss": 0.06740908570885658,
+          "test_accuracy": 0.9781
+        }
+      ],
+      "final_train_accuracy": 0.9902833333333333,
+      "final_test_accuracy": 0.9781,
+      "final_test_loss": 0.06740908570885658,
+      "sample_predictions": [
+        {
+          "true": 7,
+          "pred": 7
+        },
+        {
+          "true": 2,
+          "pred": 2
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 0,
+          "pred": 0
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 1,
+          "pred": 1
+        },
+        {
+          "true": 4,
+          "pred": 4
+        },
+        {
+          "true": 9,
+          "pred": 9
+        },
+        {
+          "true": 5,
+          "pred": 5
+        },
+        {
+          "true": 9,
+          "pred": 9
+        }
+      ]
+    }
+  ]
+}

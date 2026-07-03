@@ -1,0 +1,14 @@
+\begin{tabular}{llllll}
+\toprule
+配置 & 因素 & 参数量 & 优化器 & 学习率 & 测试准确率 \\
+\midrule
+resnet34\_mnist\_adam\_1e-3 & depth & 21280970 & adam & 0.001 & 99.31\% \\
+resnet18\_mnist\_adam\_1e-3 & depth & 11172810 & adam & 0.001 & 99.17\% \\
+resnet18\_mnist\_sgd\_1e-2 & optimizer & 11172810 & sgd & 0.01 & 99.16\% \\
+resnet18\_mnist\_rmsprop\_1e-4 & optimizer & 11172810 & rmsprop & 0.0001 & 98.94\% \\
+resnet18\_imagenet\_stem\_adam\_1e-3 & stem & 11175370 & adam & 0.001 & 98.85\% \\
+resnet18\_mnist\_adam\_5e-4 & learning\_rate & 11172810 & adam & 0.0005 & 98.76\% \\
+resnet50\_mnist\_adam\_1e-3 & depth & 23519690 & adam & 0.001 & 98.58\% \\
+plain18\_mnist\_adam\_1e-3 & residual & 11172810 & adam & 0.001 & 97.81\% \\
+\bottomrule
+\end{tabular}
