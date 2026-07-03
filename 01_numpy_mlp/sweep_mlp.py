@@ -38,6 +38,7 @@ def run_single_config(
     epochs: int,
     log_every: int,
 ) -> dict:
+    # 单组配置的流程与基础实验一致，只是把超参数显式传入，便于批量比较。
     x, y = make_spiral_data(seed=seed)
     x_train, x_test, y_train, y_test = train_test_split(x, y, seed=seed)
     x_train, x_test = standardize_train_test(x_train, x_test)
@@ -83,6 +84,7 @@ def run_single_config(
 
 
 def summarize_repeats(rows: list[dict]) -> list[dict]:
+    # 多随机种子复验用于判断 Top 配置是否稳定，而不是只看一次初始化的结果。
     grouped: dict[tuple[str, int, float, str], list[dict]] = {}
     for row in rows:
         key = (row["activation"], row["hidden_dim"], row["learning_rate"], row["optimizer"])
@@ -157,6 +159,7 @@ def main() -> None:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
+    # 1. 全因子搜索：激活函数、隐藏层宽度、学习率、优化器全部组合一遍。
     configs = list(itertools.product(ACTIVATIONS, HIDDEN_DIMS, LEARNING_RATES, OPTIMIZERS))
     results = []
     for index, (activation, hidden_dim, learning_rate, optimizer) in enumerate(configs, start=1):
@@ -184,6 +187,7 @@ def main() -> None:
             )
         )
 
+    # 2. 先按单种子测试准确率排序，再挑出前几名做复验。
     summary_rows = sorted(results, key=lambda item: item["final_test_accuracy"], reverse=True)
     top_configs = summary_rows[: args.top_k]
     repeat_rows = []
@@ -202,6 +206,7 @@ def main() -> None:
             )
     repeat_summary = summarize_repeats(repeat_rows)
 
+    # 3. 保存原始结果、CSV 摘要和 Markdown 报告，支撑实验报告中的表格和结论。
     with (args.output_dir / "mlp_sweep_results.json").open("w", encoding="utf-8") as f:
         json.dump(
             {

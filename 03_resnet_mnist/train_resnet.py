@@ -32,6 +32,7 @@ class BasicBlock(nn.Module):
         self.residual = residual
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # 1. BasicBlock 是 ResNet-18/34 的基本单元：两层 3x3 卷积后再加回输入。
         identity = x
 
         out = self.relu(self.bn1(self.conv1(x)))
@@ -68,6 +69,7 @@ class Bottleneck(nn.Module):
         self.residual = residual
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # 2. Bottleneck 是 ResNet-50 的基本单元：1x1 降维、3x3 提特征、1x1 升维。
         identity = x
 
         out = self.relu(self.bn1(self.conv1(x)))
@@ -97,7 +99,7 @@ class ResNetMNIST(nn.Module):
         self.residual = residual
         self.stem_type = stem_type
         if stem_type == "mnist":
-            # MNIST 是 1 通道 28x28 图像，因此 stem 使用 1 通道输入和较小的 3x3 卷积。
+            # 3. MNIST 是 1 通道 28x28 小图，3x3/stride=1 的 stem 能保留更多笔画细节。
             self.stem = nn.Sequential(
                 nn.Conv2d(1, 64, kernel_size=3, stride=1, padding=1, bias=False),
                 nn.BatchNorm2d(64),
@@ -113,6 +115,7 @@ class ResNetMNIST(nn.Module):
         else:
             raise ValueError(f"Unsupported stem_type: {stem_type}")
 
+        # 4. 四个残差阶段逐步增加通道数，并通过 stride=2 完成空间下采样。
         self.layer1 = self._make_layer(64, layers[0], stride=1)
         self.layer2 = self._make_layer(128, layers[1], stride=2)
         self.layer3 = self._make_layer(256, layers[2], stride=2)
@@ -128,6 +131,7 @@ class ResNetMNIST(nn.Module):
                 nn.init.zeros_(module.bias)
 
     def _make_layer(self, out_channels: int, blocks: int, stride: int) -> nn.Sequential:
+        # 5. 当尺寸或通道数变化时，用 1x1 卷积对 identity 分支做匹配。
         downsample = None
         expanded_channels = out_channels * self.block.expansion
         if stride != 1 or self.in_channels != expanded_channels:
@@ -151,6 +155,7 @@ class ResNetMNIST(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        # 6. 整体前向：stem -> 四个残差阶段 -> 全局平均池化 -> 全连接分类。
         x = self.stem(x)
         x = self.layer1(x)
         x = self.layer2(x)
@@ -162,6 +167,7 @@ class ResNetMNIST(nn.Module):
 
 
 def build_resnet_mnist(variant: str = "resnet50", residual: bool = True, stem_type: str = "mnist") -> ResNetMNIST:
+    # 7. 通过 variant 选择 ResNet-18/34/50，通过 residual 开关构造 Plain 网络对照。
     if variant == "resnet18":
         return ResNetMNIST(BasicBlock, [2, 2, 2, 2], residual=residual, stem_type=stem_type)
     if variant == "resnet34":
@@ -217,6 +223,7 @@ def load_mnist(
     limit_test: int,
     num_workers: int,
 ) -> tuple[DataLoader, DataLoader]:
+    # 8. ResNet 实验复用 MNIST 数据加载流程，输入保持 1 通道灰度图。
     try:
         from torchvision import datasets, transforms
     except Exception as exc:  # pragma: no cover - depends on local binary packages
@@ -250,6 +257,7 @@ def train_one_epoch(
     optimizer: torch.optim.Optimizer,
     device: torch.device,
 ) -> tuple[float, float]:
+    # 9. 单轮训练流程与 CNN 一致：前向、交叉熵、反向传播、优化器更新。
     model.train()
     total_loss = 0.0
     correct = 0
@@ -274,6 +282,7 @@ def train_one_epoch(
 
 @torch.no_grad()
 def evaluate(model: nn.Module, loader: DataLoader, criterion: nn.Module, device: torch.device) -> tuple[float, float]:
+    # 10. 测试时不更新梯度，只比较预测类别和真实标签。
     model.eval()
     total_loss = 0.0
     correct = 0
@@ -309,6 +318,7 @@ def main() -> None:
     set_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # 11. 按参数选择 ResNet 深度、stem 类型和是否保留残差连接。
     train_loader, test_loader = load_mnist(
         args.data_dir,
         args.batch_size,
@@ -324,6 +334,7 @@ def main() -> None:
     criterion = nn.CrossEntropyLoss()
     optimizer = build_optimizer(args.optimizer, model.parameters(), args.learning_rate)
 
+    # 12. 每个 epoch 训练后评估一次，记录 ResNet 的收敛过程。
     history = []
     for epoch in range(1, args.epochs + 1):
         train_loss, train_acc = train_one_epoch(model, train_loader, criterion, optimizer, device)
@@ -338,6 +349,7 @@ def main() -> None:
         history.append(item)
         print(json.dumps(item, ensure_ascii=False))
 
+    # 13. 保存实验配置、最终准确率、样例预测和模型权重。
     result = {
         "model": args.variant,
         "dataset": "MNIST",

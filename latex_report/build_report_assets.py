@@ -97,24 +97,55 @@ def configure_plot() -> None:
 
 
 def cnn_arch_label(row: dict[str, str], rank: int | None = None) -> str:
-    prefix = f"C{rank}: " if rank is not None else ""
     channels = row.get("channels", "").replace("-", "/")
     kernel = row.get("kernel_size", "")
     bn = "BN" if row.get("batch_norm") == "True" else "NoBN"
     dropout = row.get("dropout", "")
     pooling = "Pool" if row.get("pooling") == "True" else "NoPool"
-    return f"{prefix}k={kernel}, {channels}, {bn}, D={dropout}, {pooling}"
+    name = row.get("name", "")
+    if name.startswith("kernel5"):
+        headline = "Best: 5x5 kernel"
+    elif name.startswith("baseline"):
+        headline = "Baseline"
+    elif name.startswith("wide"):
+        headline = "Wider channels"
+    elif name.startswith("narrow"):
+        headline = "Narrow channels"
+    elif name.startswith("no_batch_norm"):
+        headline = "No BatchNorm"
+    elif name.startswith("dropout50"):
+        headline = "Dropout 0.50"
+    elif name.startswith("dropout0"):
+        headline = "No Dropout"
+    elif name.startswith("no_pooling"):
+        headline = "Worst: no pooling"
+    elif name.startswith("compact"):
+        headline = "Compact small model"
+    else:
+        headline = row.get("factor", "config")
+    return f"{headline}: k={kernel}, ch={channels}, {bn}, D={dropout}, {pooling}"
 
 
 def resnet_label(row: dict[str, str], rank: int | None = None) -> str:
-    prefix = f"R{rank}: " if rank is not None else ""
     variant = row.get("variant", "").replace("resnet", "ResNet-")
     if row.get("residual") == "False":
         variant = variant.replace("ResNet-", "Plain-")
     stem = "MNIST" if row.get("stem") == "mnist" else "ImageNet"
     optimizer = row.get("optimizer", "")
     lr = row.get("learning_rate", "")
-    return f"{prefix}{variant}, {stem}, {optimizer} {lr}"
+    if variant == "ResNet-34":
+        headline = "Best: ResNet-34"
+    elif variant == "ResNet-50":
+        headline = "Baseline: ResNet-50"
+    elif variant == "Plain-18":
+        headline = "Worst: Plain-18 no residual"
+    elif stem == "ImageNet":
+        headline = "ImageNet stem"
+    elif lr == "0.0005":
+        headline = "Lower learning rate"
+    else:
+        headline = variant
+    return f"{headline}: {stem}, {optimizer}, lr={lr}"
 
 
 def plot_mlp_optimizer_lr(rows: list[dict[str, str]]) -> None:
@@ -216,27 +247,32 @@ def plot_mlp_decision_boundary(best_row: dict[str, str]) -> None:
 def plot_cnn_hparam(rows: list[dict[str, str]]) -> None:
     if not rows:
         return
-    optimizers = ["adam", "sgd", "rmsprop"]
-    lrs = sorted({to_float(row["learning_rate"]) for row in rows}, reverse=True)
-    matrix = np.full((len(optimizers), len(lrs)), np.nan, dtype=np.float64)
-    for row in rows:
-        i = optimizers.index(row["optimizer"])
-        j = lrs.index(to_float(row["learning_rate"]))
-        matrix[i, j] = to_float(row["final_test_accuracy"])
-    plt.figure(figsize=(6.0, 3.3))
-    image = plt.imshow(matrix, vmin=np.nanmin(matrix), vmax=np.nanmax(matrix), cmap="magma")
-    plt.colorbar(image, label="Test accuracy")
-    plt.xticks(range(len(lrs)), [f"{lr:g}" for lr in lrs])
-    plt.yticks(range(len(optimizers)), optimizers)
-    plt.xlabel("Learning rate")
-    plt.ylabel("Optimizer")
-    plt.title("CNN optimizer and learning-rate sweep")
-    for i in range(matrix.shape[0]):
-        for j in range(matrix.shape[1]):
-            plt.text(j, i, f"{matrix[i, j]:.3f}", ha="center", va="center", color="white")
-    plt.tight_layout()
-    plt.savefig(FIGURE_DIR / "cnn_optimizer_lr_heatmap.png")
-    plt.close()
+    rows_sorted = sorted(rows, key=lambda row: to_float(row["final_test_accuracy"]))
+    labels = [f"{row['optimizer']}  lr={to_float(row['learning_rate']):g}" for row in rows_sorted]
+    values = [to_float(row["final_test_accuracy"]) for row in rows_sorted]
+    color_by_optimizer = {"adam": "#2F6F9F", "sgd": "#E07A3F", "rmsprop": "#5A7D3A"}
+    colors = [color_by_optimizer.get(row["optimizer"], "#777777") for row in rows_sorted]
+
+    fig, ax = plt.subplots(figsize=(7.2, 4.2))
+    ax.barh(range(len(rows_sorted)), values, color=colors, height=0.62)
+    ax.set_yticks(range(len(rows_sorted)), labels)
+    ax.set_xlabel("Test accuracy")
+    ax.set_title("CNN optimizer and learning-rate sweep (actual runs)")
+    ax.set_xlim(min(values) - 0.003, min(1.0, max(values) + 0.0025))
+    ax.grid(axis="x", alpha=0.25)
+    ax.grid(axis="y", visible=False)
+
+    for i, value in enumerate(values):
+        ax.text(value + 0.00025, i, f"{value:.4f}", va="center", fontsize=8)
+
+    handles = [
+        plt.Line2D([0], [0], marker="s", color="none", markerfacecolor=color, markersize=8, label=name)
+        for name, color in color_by_optimizer.items()
+    ]
+    ax.legend(handles=handles, title="Optimizer", loc="lower right", frameon=True)
+    fig.subplots_adjust(left=0.27, right=0.97, top=0.88, bottom=0.16)
+    fig.savefig(FIGURE_DIR / "cnn_optimizer_lr_heatmap.png")
+    plt.close(fig)
 
 
 def plot_ranked_accuracy_bars(
@@ -250,15 +286,37 @@ def plot_ranked_accuracy_bars(
         return
     ranked_rows = list(enumerate(rows, start=1))
     rows_sorted = sorted(ranked_rows, key=lambda item: to_float(item[1][value_field]))
+    max_value = max(to_float(row[value_field]) for _, row in ranked_rows)
+    min_value = min(to_float(row[value_field]) for _, row in ranked_rows)
     if label_kind == "cnn":
-        labels = [f"C{rank}  {row['factor']}" for rank, row in rows_sorted]
-        color = "#2F6F9F"
+        labels = [cnn_arch_label(row) for _, row in rows_sorted]
+        color_by_factor = {
+            "baseline": "#777777",
+            "kernel_size": "#2F6F9F",
+            "channels": "#9467BD",
+            "batch_norm": "#5A7D3A",
+            "dropout": "#E07A3F",
+            "pooling": "#D62728",
+            "compact": "#999999",
+        }
+        colors = [color_by_factor.get(row.get("factor", ""), "#777777") for _, row in rows_sorted]
+        left_margin = 0.41
+        width = 9.2
     else:
-        labels = [f"R{rank}  {row['factor']}" for rank, row in rows_sorted]
-        color = "#5A7D3A"
+        labels = [resnet_label(row) for _, row in rows_sorted]
+        color_by_factor = {
+            "depth": "#2F6F9F",
+            "optimizer": "#5A7D3A",
+            "stem": "#9467BD",
+            "learning_rate": "#D62728",
+            "residual": "#7F7F7F",
+        }
+        colors = [color_by_factor.get(row.get("factor", ""), "#777777") for _, row in rows_sorted]
+        left_margin = 0.37
+        width = 9.0
     values = [to_float(row[value_field]) for _, row in rows_sorted]
-    fig, ax = plt.subplots(figsize=(7.2, max(3.6, 0.38 * len(rows_sorted))))
-    ax.barh(range(len(rows_sorted)), values, color=color, height=0.62)
+    fig, ax = plt.subplots(figsize=(width, max(4.2, 0.48 * len(rows_sorted))))
+    ax.barh(range(len(rows_sorted)), values, color=colors, height=0.62)
     ax.set_yticks(range(len(rows_sorted)), labels)
     ax.set_xlabel("Test accuracy")
     ax.set_title(title)
@@ -266,8 +324,18 @@ def plot_ranked_accuracy_bars(
     ax.grid(axis="x", alpha=0.25)
     ax.grid(axis="y", visible=False)
     for i, value in enumerate(values):
-        ax.text(value + 0.00035, i, f"{value:.4f}", va="center", fontsize=8)
-    fig.subplots_adjust(left=0.18, right=0.96, top=0.88, bottom=0.16)
+        tag = ""
+        if abs(value - max_value) < 1e-12:
+            tag = "  best"
+        elif abs(value - min_value) < 1e-12:
+            tag = "  lowest"
+        ax.text(value + 0.00035, i, f"{value:.4f}{tag}", va="center", fontsize=8, weight="bold" if tag else "normal")
+    handles = [
+        plt.Line2D([0], [0], marker="s", color="none", markerfacecolor=color, markersize=8, label=factor)
+        for factor, color in color_by_factor.items()
+    ]
+    ax.legend(handles=handles, title="Changed factor", loc="lower right", frameon=True)
+    fig.subplots_adjust(left=left_margin, right=0.98, top=0.88, bottom=0.16)
     fig.savefig(FIGURE_DIR / filename)
     plt.close(fig)
 
@@ -294,27 +362,85 @@ def plot_horizontal_accuracy(rows: list[dict[str, str]], label_field: str, value
 def plot_resnet_params(rows: list[dict[str, str]]) -> None:
     if not rows:
         return
-    fig, ax = plt.subplots(figsize=(6.6, 4.2))
+    fig, ax = plt.subplots(figsize=(9.2, 4.8))
+    color_by_factor = {
+        "depth": "#2F6F9F",
+        "optimizer": "#5A7D3A",
+        "stem": "#9467BD",
+        "learning_rate": "#D62728",
+        "residual": "#7F7F7F",
+    }
+    label_positions = {
+        1: (21.6, 0.9942),
+        2: (12.05, 0.9903),
+        3: (11.65, 0.9933),
+        4: (12.05, 0.9895),
+        5: (12.05, 0.9878),
+        6: (12.05, 0.9851),
+        7: (23.15, 0.9868),
+        8: (11.55, 0.9772),
+    }
+    legend_lines = []
     for rank, row in enumerate(rows, start=1):
         params_m = to_float(row["parameter_count"]) / 1_000_000.0
         acc = to_float(row["final_test_accuracy"])
-        ax.scatter(params_m, acc, s=58)
-        x_offset = 6 if rank in {7, 8} else 5
-        y_offset = 6 if rank % 2 else -11
+        color = color_by_factor.get(row.get("factor", ""), "#777777")
+        ax.scatter(params_m, acc, s=70, color=color, edgecolor="white", linewidth=0.8, zorder=3)
+        label_x, label_y = label_positions.get(rank, (params_m + 0.25, acc + 0.0008))
+        if row.get("residual") == "False":
+            point_label = "Plain-18\nno residual"
+        elif row.get("variant") == "resnet34":
+            point_label = "Best\nResNet-34"
+        elif row.get("variant") == "resnet50":
+            point_label = "Baseline\nResNet-50"
+        elif row.get("stem") == "imagenet":
+            point_label = "ImageNet\nstem"
+        elif row.get("learning_rate") == "0.0005":
+            point_label = "Lower lr"
+        elif row.get("optimizer") == "sgd":
+            point_label = "SGD"
+        elif row.get("optimizer") == "rmsprop":
+            point_label = "RMSprop"
+        else:
+            point_label = "ResNet-18\nAdam"
         ax.annotate(
-            f"R{rank}",
+            point_label,
             (params_m, acc),
-            textcoords="offset points",
-            xytext=(x_offset, y_offset),
-            fontsize=8,
+            textcoords="data",
+            xytext=(label_x, label_y),
+            fontsize=7.3,
             weight="bold",
+            arrowprops={"arrowstyle": "-", "color": "#666666", "lw": 0.7, "shrinkA": 0, "shrinkB": 3},
+        )
+        variant = row.get("variant", "").replace("resnet", "ResNet-")
+        if row.get("residual") == "False":
+            variant = variant.replace("ResNet-", "Plain-")
+        stem = "MNIST" if row.get("stem") == "mnist" else "ImageNet"
+        legend_lines.append(
+            f"{variant}, {stem}, {row.get('optimizer')}, lr={to_float(row.get('learning_rate')):g}, "
+            f"{params_m:.1f}M, acc={acc:.4f}"
         )
     ax.set_xlabel("Parameters (M)")
     ax.set_ylabel("Test accuracy")
     ax.set_title("ResNet parameter count vs accuracy")
     ax.set_ylim(min(to_float(row["final_test_accuracy"]) for row in rows) - 0.002, 0.995)
     ax.grid(alpha=0.25)
-    fig.subplots_adjust(left=0.12, right=0.97, top=0.88, bottom=0.14)
+    handles = [
+        plt.Line2D([0], [0], marker="o", color="none", markerfacecolor=color, markeredgecolor="white", markersize=7, label=factor)
+        for factor, color in color_by_factor.items()
+    ]
+    ax.legend(handles=handles, title="Ablation factor", loc="lower center", frameon=True)
+    ax.text(
+        1.02,
+        0.98,
+        "\n".join(legend_lines),
+        transform=ax.transAxes,
+        va="top",
+        ha="left",
+        fontsize=7.4,
+        bbox={"boxstyle": "round,pad=0.35", "facecolor": "white", "edgecolor": "#CCCCCC", "alpha": 0.95},
+    )
+    fig.subplots_adjust(left=0.10, right=0.63, top=0.88, bottom=0.14)
     fig.savefig(FIGURE_DIR / "resnet_params_accuracy.png")
     plt.close(fig)
 
@@ -505,13 +631,13 @@ MLP 最优配置为 \texttt{{{latex_escape(mlp_best.get("activation", "--"))}}} 
 \begin{{figure}}[H]
 \centering
 \includegraphics[width=0.72\linewidth]{{figures/cnn_optimizer_lr_heatmap.png}}
-\caption{{CNN 优化器与学习率热力图}}
+\caption{{CNN 优化器与学习率真实运行配置排序图}}
 \end{{figure}}
 
 \begin{{figure}}[H]
 \centering
 \includegraphics[width=0.88\linewidth]{{figures/cnn_arch_ablation.png}}
-\caption{{CNN 架构消融测试准确率，C 编号对应上方表格}}
+\caption{{CNN 架构消融测试准确率，左侧直接标明配置变化}}
 \end{{figure}}
 
 \section{{实验三：ResNet-MNIST}}
@@ -530,13 +656,13 @@ ResNet sweep 中最佳配置为 \texttt{{{latex_escape(resnet_best.get("name", "
 \begin{{figure}}[H]
 \centering
 \includegraphics[width=0.88\linewidth]{{figures/resnet_ablation.png}}
-\caption{{ResNet 不同配置测试准确率，R 编号对应上方表格}}
+\caption{{ResNet 不同配置测试准确率，左侧直接标明模型变化}}
 \end{{figure}}
 
 \begin{{figure}}[H]
 \centering
 \includegraphics[width=0.80\linewidth]{{figures/resnet_params_accuracy.png}}
-\caption{{ResNet 参数量与测试准确率关系，R 编号对应上方表格}}
+\caption{{ResNet 参数量与测试准确率关系，点旁边直接标明模型含义}}
 \end{{figure}}
 
 \section{{综合分析与汇报思路}}

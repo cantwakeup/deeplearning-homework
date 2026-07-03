@@ -20,6 +20,7 @@ from train_resnet import (
 
 
 RESNET_CONFIGS = [
+    # 1. 把 ResNet-50 baseline 放进同一轮 sweep，再改变深度、残差、stem、优化器和学习率。
     {
         "name": "resnet18_mnist_adam_1e-3",
         "factor": "depth",
@@ -115,6 +116,7 @@ def run_config(
     train_loader,
     test_loader,
 ) -> dict:
+    # 2. 每个配置重新初始化模型，保证比较的是配置差异而不是上一轮训练残留。
     set_seed(args.seed)
     model = build_resnet_mnist(
         variant=config["variant"],
@@ -154,6 +156,7 @@ def run_config(
 
 
 def write_outputs(results: list[dict], output_dir: Path) -> None:
+    # 3. 按测试准确率排序，并把参数量一起保存，方便讨论“更深是否一定更好”。
     output_dir.mkdir(parents=True, exist_ok=True)
     summary_rows = sorted(results, key=lambda item: item["final_test_accuracy"], reverse=True)
 
@@ -207,6 +210,7 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
     set_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # 4. 数据加载一次后复用，保证 ResNet 各消融配置面对同一套 MNIST 数据。
     train_loader, test_loader = load_mnist(
         args.data_dir,
         args.batch_size,
@@ -214,6 +218,7 @@ def main() -> None:
         args.limit_test,
         args.num_workers,
     )
+    # 5. 顺序运行所有 ResNet 对照实验，最后统一写出 JSON、CSV 和 Markdown 报告。
     results = [run_config(config, args, device, train_loader, test_loader) for config in RESNET_CONFIGS]
     write_outputs(results, args.output_dir)
 

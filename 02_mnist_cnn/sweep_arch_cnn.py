@@ -20,6 +20,7 @@ from train_cnn import (
 
 
 ARCHITECTURE_CONFIGS = [
+    # 1. 以 baseline 为参照，后续配置尽量只改变一个结构因素，便于做消融分析。
     {
         "name": "baseline_k3_c32-64_bn_do25_pool",
         "factor": "baseline",
@@ -126,6 +127,7 @@ def run_config(
     train_loader,
     test_loader,
 ) -> dict:
+    # 2. 用同一训练流程评估一个结构配置，记录参数量和最终测试表现。
     set_seed(args.seed)
     model = SimpleCNN(
         channels=config["channels"],
@@ -170,6 +172,7 @@ def run_config(
 
 
 def write_outputs(results: list[dict], output_dir: Path) -> None:
+    # 3. 消融结果按测试准确率排序，同时保留配置名、变化因素和参数量。
     output_dir.mkdir(parents=True, exist_ok=True)
     summary_rows = sorted(results, key=lambda item: item["final_test_accuracy"], reverse=True)
 
@@ -242,6 +245,7 @@ def main() -> None:
     args.output_dir.mkdir(parents=True, exist_ok=True)
     set_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # 4. 数据只加载一次，各结构配置共用同一数据划分，减少非结构因素干扰。
     train_loader, test_loader = load_mnist(
         args.data_dir,
         args.batch_size,
@@ -249,6 +253,7 @@ def main() -> None:
         args.limit_test,
         args.num_workers,
     )
+    # 5. 逐个运行卷积核、通道数、BatchNorm、Dropout 和池化的对比配置。
     results = [
         run_config(config, args, device, train_loader, test_loader)
         for config in ARCHITECTURE_CONFIGS

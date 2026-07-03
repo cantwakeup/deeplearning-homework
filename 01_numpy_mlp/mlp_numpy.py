@@ -17,6 +17,7 @@ def make_spiral_data(
     noise: float = 0.2,
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray]:
+    # 1. 构造非线性三分类数据：螺旋形分布能检验隐藏层的表达能力。
     rng = np.random.default_rng(seed)
     total = samples_per_class * num_classes
     x = np.zeros((total, 2), dtype=np.float64)
@@ -40,6 +41,7 @@ def train_test_split(
     test_ratio: float = 0.25,
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    # 2. 随机打乱后划分训练集和测试集，避免同一类别样本连续排列造成偏差。
     rng = np.random.default_rng(seed)
     indices = rng.permutation(x.shape[0])
     test_size = int(x.shape[0] * test_ratio)
@@ -52,6 +54,7 @@ def standardize_train_test(
     x_train: np.ndarray,
     x_test: np.ndarray,
 ) -> tuple[np.ndarray, np.ndarray]:
+    # 3. 只用训练集统计量做标准化，测试集不能泄露自己的均值和方差。
     mean = x_train.mean(axis=0, keepdims=True)
     std = x_train.std(axis=0, keepdims=True)
     std[std == 0] = 1.0
@@ -79,6 +82,7 @@ class NumpyMLP:
         momentum: float = 0.9,
         seed: int = 42,
     ) -> None:
+        # 4. 初始化两层权重和优化器状态：w1/b1 对应隐藏层，w2/b2 对应输出层。
         rng = np.random.default_rng(seed)
         self.learning_rate = learning_rate
         self.l2 = l2
@@ -151,7 +155,7 @@ class NumpyMLP:
         return self.sigmoid_grad(x)
 
     def forward(self, x: np.ndarray) -> tuple[np.ndarray, dict[str, np.ndarray]]:
-        # 前向传播：输入层 -> 隐含层激活 -> 输出层 Softmax。
+        # 5. 前向传播：输入层 -> 隐含层激活 -> 输出层 Softmax。
         z1 = x @ self.w1 + self.b1
         a1 = self.activate(z1)
         logits = a1 @ self.w2 + self.b2
@@ -160,6 +164,7 @@ class NumpyMLP:
         return probabilities, cache
 
     def cross_entropy_loss(self, probabilities: np.ndarray, y_true: np.ndarray) -> float:
+        # 6. 交叉熵衡量分类错误程度，L2 正则限制权重过大。
         eps = 1e-12
         clipped = np.clip(probabilities, eps, 1.0 - eps)
         data_loss = -np.sum(y_true * np.log(clipped)) / y_true.shape[0]
@@ -173,7 +178,7 @@ class NumpyMLP:
         probabilities = cache["probabilities"]
         batch_size = x.shape[0]
 
-        # 反向传播：Softmax + 交叉熵的梯度先回传到输出层，再回传到隐含层。
+        # 7. 反向传播：Softmax + 交叉熵的梯度先回传到输出层，再回传到隐含层。
         d_logits = (probabilities - y_true) / batch_size
         d_w2 = a1.T @ d_logits + self.l2 * self.w2
         d_b2 = d_logits.sum(axis=0, keepdims=True)
@@ -185,6 +190,7 @@ class NumpyMLP:
         self.apply_gradients({"w1": d_w1, "b1": d_b1, "w2": d_w2, "b2": d_b2})
 
     def apply_gradients(self, gradients: dict[str, np.ndarray]) -> None:
+        # 8. 根据选择的优化器更新参数：GD 直接下降，Momentum 带速度，Adam 带一二阶矩估计。
         params = {"w1": self.w1, "b1": self.b1, "w2": self.w2, "b2": self.b2}
         self.step += 1
 
@@ -210,6 +216,7 @@ class NumpyMLP:
         epochs: int = 1500,
         log_every: int = 100,
     ) -> list[TrainingMetrics]:
+        # 9. 训练循环按“前向 -> 计算损失 -> 反向 -> 更新参数 -> 记录指标”执行。
         num_classes = int(max(y_train.max(), y_test.max()) + 1)
         y_train_one_hot = one_hot(y_train, num_classes)
         history: list[TrainingMetrics] = []

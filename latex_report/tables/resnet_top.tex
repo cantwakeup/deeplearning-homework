@@ -2,13 +2,13 @@
 \toprule
 编号与配置 & 因素 & 参数量 & 优化器 & 学习率 & 测试准确率 \\
 \midrule
-R1: ResNet-34, MNIST, adam 0.001 & depth & 21280970 & adam & 0.001 & 99.31\% \\
-R2: ResNet-18, MNIST, adam 0.001 & depth & 11172810 & adam & 0.001 & 99.17\% \\
-R3: ResNet-18, MNIST, sgd 0.01 & optimizer & 11172810 & sgd & 0.01 & 99.16\% \\
-R4: ResNet-18, MNIST, rmsprop 0.0001 & optimizer & 11172810 & rmsprop & 0.0001 & 98.94\% \\
-R5: ResNet-18, ImageNet, adam 0.001 & stem & 11175370 & adam & 0.001 & 98.85\% \\
-R6: ResNet-18, MNIST, adam 0.0005 & learning\_rate & 11172810 & adam & 0.0005 & 98.76\% \\
-R7: ResNet-50, MNIST, adam 0.001 & depth & 23519690 & adam & 0.001 & 98.58\% \\
-R8: Plain-18, MNIST, adam 0.001 & residual & 11172810 & adam & 0.001 & 97.81\% \\
+Best: ResNet-34: MNIST, adam, lr=0.001 & depth & 21280970 & adam & 0.001 & 99.31\% \\
+ResNet-18: MNIST, adam, lr=0.001 & depth & 11172810 & adam & 0.001 & 99.17\% \\
+ResNet-18: MNIST, sgd, lr=0.01 & optimizer & 11172810 & sgd & 0.01 & 99.16\% \\
+ResNet-18: MNIST, rmsprop, lr=0.0001 & optimizer & 11172810 & rmsprop & 0.0001 & 98.94\% \\
+ImageNet stem: ImageNet, adam, lr=0.001 & stem & 11175370 & adam & 0.001 & 98.85\% \\
+Lower learning rate: MNIST, adam, lr=0.0005 & learning\_rate & 11172810 & adam & 0.0005 & 98.76\% \\
+Baseline: ResNet-50: MNIST, adam, lr=0.001 & depth & 23519690 & adam & 0.001 & 98.58\% \\
+Worst: Plain-18 no residual: MNIST, adam, lr=0.001 & residual & 11172810 & adam & 0.001 & 97.81\% \\
 \bottomrule
 \end{tabular}

@@ -28,6 +28,7 @@ class SimpleCNN(nn.Module):
         self.pooling = pooling
         padding = kernel_size // 2
 
+        # 1. 单个卷积块负责提取局部笔画特征，可切换 BatchNorm 和池化做消融。
         def conv_block(in_channels: int, out_channels: int) -> list[nn.Module]:
             layers: list[nn.Module] = [
                 nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding),
@@ -39,7 +40,7 @@ class SimpleCNN(nn.Module):
                 layers.append(nn.MaxPool2d(2))
             return layers
 
-        # 两组卷积块用于比较卷积核、通道数、归一化、Dropout 和下采样对 MNIST 的影响。
+        # 2. 两组卷积块逐步扩大通道数，再把特征交给全连接分类器输出 10 类。
         self.features = nn.Sequential(
             *conv_block(1, channels[0]),
             *conv_block(channels[0], channels[1]),
@@ -104,6 +105,7 @@ def load_mnist(
     limit_test: int,
     num_workers: int,
 ) -> tuple[DataLoader, DataLoader]:
+    # 3. 加载 MNIST 并做固定归一化，训练集打乱，测试集保持顺序评估。
     try:
         from torchvision import datasets, transforms
     except Exception as exc:  # pragma: no cover - depends on local binary packages
@@ -137,6 +139,7 @@ def train_one_epoch(
     optimizer: torch.optim.Optimizer,
     device: torch.device,
 ) -> tuple[float, float]:
+    # 4. 单轮训练：前向计算 logits，交叉熵反传，再由优化器更新参数。
     model.train()
     total_loss = 0.0
     correct = 0
@@ -161,6 +164,7 @@ def train_one_epoch(
 
 @torch.no_grad()
 def evaluate(model: nn.Module, loader: DataLoader, criterion: nn.Module, device: torch.device) -> tuple[float, float]:
+    # 5. 评估阶段关闭梯度，只统计平均损失和分类准确率。
     model.eval()
     total_loss = 0.0
     correct = 0
@@ -196,6 +200,7 @@ def main() -> None:
     set_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
+    # 6. 按命令行参数准备数据、模型、损失函数和优化器。
     train_loader, test_loader = load_mnist(
         args.data_dir,
         args.batch_size,
@@ -213,6 +218,7 @@ def main() -> None:
     criterion = nn.CrossEntropyLoss()
     optimizer = build_optimizer(args.optimizer, model.parameters(), args.learning_rate)
 
+    # 7. 每个 epoch 后立即测试，形成训练曲线和最终测试准确率。
     history = []
     for epoch in range(1, args.epochs + 1):
         train_loss, train_acc = train_one_epoch(model, train_loader, criterion, optimizer, device)
@@ -227,6 +233,7 @@ def main() -> None:
         history.append(item)
         print(json.dumps(item, ensure_ascii=False))
 
+    # 8. 保存指标、样例预测和模型权重，便于报告复现和后续加载。
     result = {
         "model": "SimpleCNN",
         "dataset": "MNIST",

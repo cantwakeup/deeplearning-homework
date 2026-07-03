@@ -19,3 +19,11 @@ env/
 .conda-pkgs/
 .cache/
 .env
+
+# LaTeX build/cache artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+latex_report/1settings/

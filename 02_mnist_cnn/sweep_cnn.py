@@ -21,6 +21,7 @@ from train_cnn import (
 
 
 DEFAULT_CONFIGS = [
+    # 1. 固定 CNN 结构，只比较优化器和学习率对收敛速度、准确率的影响。
     ("adam", 1e-3),
     ("adam", 5e-4),
     ("adam", 1e-4),
@@ -59,6 +60,7 @@ def run_config(
     args: argparse.Namespace,
     device: torch.device,
 ) -> dict:
+    # 2. 每组配置都重新设随机种子并重新建模，保证不同实验之间互不继承参数。
     set_seed(args.seed)
     train_loader, test_loader = load_mnist(
         args.data_dir,
@@ -100,6 +102,7 @@ def run_config(
 
 
 def write_outputs(results: list[dict], output_dir: Path) -> None:
+    # 3. 按测试准确率排序，分别输出原始 JSON、CSV 排名表和 Markdown 报告。
     output_dir.mkdir(parents=True, exist_ok=True)
     summary_rows = sorted(
         results,
@@ -164,6 +167,7 @@ def write_outputs(results: list[dict], output_dir: Path) -> None:
 def main() -> None:
     args = parse_args()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # 4. 顺序运行 9 组优化器/学习率组合，用同一套输出函数汇总结果。
     results = [
         run_config(optimizer_name, learning_rate, args, device)
         for optimizer_name, learning_rate in DEFAULT_CONFIGS
